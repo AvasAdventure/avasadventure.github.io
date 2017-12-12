@@ -1,0 +1,246 @@
+[{
+    	"country": "0",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "0",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "0",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "0",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "0",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "2",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "2",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "2",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "2",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "2",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "3",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "3",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "3",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "3",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "3",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "4",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "4",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "4",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "4",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "4",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "5",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "5",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "5",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "5",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "5",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "6",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "6",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "6",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "6",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn",
+		"image": "/assets/ava_2v.png"
+	},
+	{
+		"country": "6",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card",
+		"image": "/assets/ava_2v.png"
+	}
+]
