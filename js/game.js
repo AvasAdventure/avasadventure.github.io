@@ -14,7 +14,7 @@ function preload() {
 	game.load.json('card_deck', "assets/card_deck.json");
 	game.load.crossOrigins = 'anonymous';
 	game.load.image('background', 'assets/background-2.png');
-	game.load.image('ava_v2', 'assets/ava_v2.png');
+	game.load.image('ava_v2', 'assets/Ava_v2.png');
 	game.load.image('ava_logo', 'assets/ava_logo.png');
 	game.load.image('draw-button', 'assets/draw-button.png');
 	game.load.image('start-button', 'assets/start-button.png');
