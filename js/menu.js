@@ -1,6 +1,6 @@
 var menuState = {
 	create: function() {
-		var background = game.add.tileSprite(0, 0, 1400, 1400, 'background');
+		var background = game.add.tileSprite(0, 0, 1920, 1079, 'background');
  			millWieken = game.add.sprite(game.world.centerX + 500, game.world.centerY -290, 'wieken');
  			millWieken.anchor.set(0.5, 0.5);
 
@@ -35,6 +35,5 @@ var menuState = {
 	},
 	update: function() {
  		millWieken.angle += 0.5;
-
 	}
 }

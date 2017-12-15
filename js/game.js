@@ -1,5 +1,8 @@
 // start Phaser
+var screenWidth = 1920;
+var screenHeight= 1079;
 var game = new Phaser.Game(1920, 1079, Phaser.CANVAS, '');
+
 // add game states: 'boot', 'load', 'menu', 'options', 'play', 'finish'
 game.state.add('boot', bootState);
 game.state.add('load', loadState);

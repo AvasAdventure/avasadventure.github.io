@@ -5,23 +5,23 @@ var playState = {
  		millWieken.anchor.set(0.5, 0.5);
 // adds UI buttons
 // first adds the playButton, which call drawcard on click.
-		playButton = game.add.button(700, game.world.centerY + 600, 'draw-button', this.playRound, this);
+		playButton = game.add.button(700, game.world.height - 75, 'draw-button', this.playRound, this);
 		playButton.anchor.set(0.3, 0.3);
 		playButton.scale.set(0.5, 0.5);
 // button to show player hand, 
-		showHandButton = game.add.button(200, game.world.centerY + 600, 'showhand-button', this.showHand, this);
+		showHandButton = game.add.button(200, game.world.height - 75, 'showhand-button', this.showHand, this);
 		showHandButton.anchor.set(0.3, 0.3);
 		showHandButton.scale.set(0.5, 0.5);
 // button to hide player hand
-		hideHandButton = game.add.button(450, game.world.centerY + 600, 'hidehand-button', this.hideHand, this);
+		hideHandButton = game.add.button(450, game.world.height - 75, 'hidehand-button', this.hideHand, this);
 		hideHandButton.anchor.set(0.3,0.3);
 		hideHandButton.scale.set(0.5, 0.5);
 // button to end turn
-		endTurnButton = game.add.button(1200, game.world.centerY + 600, 'endturn-button', this.endTurn, this);
+		endTurnButton = game.add.button(1200, game.world.height - 75, 'endturn-button', this.endTurn, this);
 		endTurnButton.anchor.set(0.3, 0.3);
 		endTurnButton.scale.set(0.5, 0.5);
 // button to restart game
-		restartButton = game.add.button(200, 200, 'restart-button', this.restartGame, this);
+		restartButton = game.add.button(90, 40, 'restart-button', this.restartGame, this);
 		restartButton.anchor.set(0.3, 0.3);
 		restartButton.scale.set(0.5, 0.5);
 
