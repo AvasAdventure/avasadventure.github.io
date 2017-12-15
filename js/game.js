@@ -1,5 +1,5 @@
 // start Phaser
-var game = new Phaser.Game(1440, 900, Phaser.CANVAS, '');
+var game = new Phaser.Game(1920, 1079, Phaser.CANVAS, '');
 // add game states: 'boot', 'load', 'menu', 'options', 'play', 'finish'
 game.state.add('boot', bootState);
 game.state.add('load', loadState);
