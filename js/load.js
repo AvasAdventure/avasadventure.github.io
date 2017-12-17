@@ -1,7 +1,10 @@
 var loadState = {
 	preload: function() {
-// load the card deck, hosted the JSON mocky for now
-		game.load.json('card_deck', "assets/card_deck.json");
+		/*
+	// load the card deck, hosted the JSON mocky for now
+		game.load.json('card_deck', "assets/card_deck.json");*/
+
+		//Load general assets here.
 		game.load.crossOrigins = 'anonymous';
 		game.load.image('background', 'assets/background.png');
 		game.load.image('ava_v2', 'assets/ava_v2.png');
@@ -16,9 +19,13 @@ var loadState = {
 		game.load.image('restart-button', 'assets/restart-button.png');
 		game.load.image('wieken', 'assets/wieken.png');
 		game.load.image('menu-container', 'assets/menu-container.png');
+
+		//Load the card deck list.
+		//game.load.spritesheet('cards', 'assets/card-deck.png', 181, 252, 11);
+		game.load.json('card-decks', deckStorageLink + "countries.json");
 	},
 	create: function() {
-		game.state.start('menu');
-		console.log('loadState did load')
+		game.state.start('secondLoad');
+		console.log('loadState did load');
 	}
 }

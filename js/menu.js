@@ -2,8 +2,8 @@ var menuState = {
 	create: function() {
 		var background = game.add.tileSprite(0, 0, 1920, 1079, 'background');
  			millWieken = game.add.sprite(game.world.centerX + 500, game.world.centerY -290, 'wieken');
- 			millWieken.anchor.set(0.5, 0.5);
-
+			millWieken.anchor.set(0.5, 0.5);
+			 
  // fade in menu, containing start and options buttins	
 		var menuContainer = game.add.sprite(game.world.centerX, game.world.centerY + 180, 'menu-container');
 			menuContainer.anchor.set(0.5,0.5);
@@ -12,7 +12,7 @@ var menuState = {
 // ava logo, dropping in from top with bounce
 		var loadLogo = game.add.sprite(game.world.centerX, game.world.centerY - 300, 'ava_logo');
 			loadLogo.anchor.set(0.5);
-			loadLogo.scale.set(2, 2,);
+			loadLogo.scale.set(2, 2);
 			game.add.tween(loadLogo).from( { y: - 200 }, 2000, Phaser.Easing.Bounce.Out, true);
 // start button
 		var startButton = game.add.button(game.world.centerX, game.world.centerY, 'start-button', this.play, this);
