@@ -44,13 +44,6 @@ var playState = {
 		}
 		this.deck = combinedDeck;
 		//console.log(this.deck);
-
-		//get country number
-		console.log(this.deck.length);
-		console.log(this.getCountryIndex(4));
-		console.log(this.getCountryIndex(5));
-
-
 		this.player1hand = [];
 		this.player2hand = [];
 		this.playerActions = 2;
