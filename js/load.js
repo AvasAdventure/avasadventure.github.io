@@ -19,7 +19,6 @@ var loadState = {
 		game.load.image('restart-button', 'assets/restart-button.png');
 		game.load.image('wieken', 'assets/wieken.png');
 		game.load.image('menu-container', 'assets/menu-container.png');
-
 		//Load the card deck list.
 		//game.load.spritesheet('cards', 'assets/card-deck.png', 181, 252, 11);
 		game.load.json('card-decks', deckStorageLink + "countries.json");

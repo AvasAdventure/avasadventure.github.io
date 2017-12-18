@@ -1,4 +1,5 @@
 var deckStorageLink = "https://raw.githubusercontent.com/AvasAdventure/Card-Decks/master/";
+var deckLength = 5; //should be 10 later
 
 // Start Phaser
 var game = new Phaser.Game(1920, 1079, Phaser.CANVAS, '');
@@ -12,4 +13,5 @@ game.state.add('options', optionsState);
 game.state.add('play', playState);
 game.state.add('restart', restartState);
 
+//Start game
 game.state.start('boot');

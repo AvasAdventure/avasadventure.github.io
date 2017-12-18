@@ -35,8 +35,22 @@ var playState = {
 	create: function() {
 // sets up game. stores the JSON containing the card deck in the variable 'deck'
 		console.log('setting up game');
-		this.deck = game.cache.getJSON('card_deck');
-		console.log(this.deck);
+		
+		//Combine all card decks into one big JSON
+		var combinedDeck = [];
+		for(let i = 0; i < deckAmount; i++){
+			let deck1 = game.cache.getJSON('cards' + i);
+			combinedDeck = combinedDeck.concat(deck1);
+		}
+		this.deck = combinedDeck;
+		//console.log(this.deck);
+
+		//get country number
+		console.log(this.deck.length);
+		console.log(this.getCountryIndex(4));
+		console.log(this.getCountryIndex(5));
+
+
 		this.player1hand = [];
 		this.player2hand = [];
 		this.playerActions = 2;
@@ -79,7 +93,7 @@ var playState = {
 	},
 	drawCard: function() {
 // math.random calls a float between 0 and 1, this is multiplied with the length of the deck, and rounded up to the nearest integer.
-		var i = Math.floor(Math.random()* this.deck.length);
+		var i = Math.floor(Math.random() * this.deck.length);
 		this.card = this.deck[i];		
 	},
 	showHand: function() {
@@ -126,5 +140,16 @@ var playState = {
 	},
 	update: function() {
 		millWieken.angle += 0.5;
+	},
+
+	//Helper functions
+	getCountryIndex: function(number) {
+		var x = number;
+		var count = -1;
+		while(x >= 0){
+			count += 1;
+			x -= deckLength;
+		}
+		return count;
 	}
 }
