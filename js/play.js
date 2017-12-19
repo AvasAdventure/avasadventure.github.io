@@ -43,7 +43,7 @@ var playState = {
 			combinedDeck = combinedDeck.concat(deck1);
 		}
 		this.deck = combinedDeck;
-		this.drawPile = this.deck;
+		this.drawPile = combinedDeck;
 		this.discardPile = [];
 		//console.log(deckAmount);
 		//console.log(this.deck);
@@ -51,19 +51,25 @@ var playState = {
 		this.player1hand = [];
 		this.player2hand = [];
 		this.playerActions = 2;
-// randomly decided who starts first.
+		//Randomly decided who starts first.
 		this.player1Turn = false;
-		this.player2Turn = false;	
-// integerInRange(1,2) picks a random integer between 1 and 2, so just 1 or 2 in this case.
-		this.playerStart = this.game.rnd.integerInRange(1, 2);
-		this.player1Turn = true;/*
-		if( this.playerStart == 1) {
+		this.player2Turn = false;
+		// integerInRange(1,2) picks a random integer between 1 and 2, so just 1 or 2 in this case.
+		var playerStart = this.game.rnd.integerInRange(1, 2);
+		if(playerStart == 1){
 			this.player1Turn = true;
 			alert('Player 1 starts!');
-		} else {
+		}else{
 			this.player2Turn = true;
 			alert('Player 2 starts!');
-		}*/
+		}
+		
+		//console.clear();
+		if(this.player1Turn){
+			console.log('Player 1');
+		}else{
+			console.log('Player 2');
+		}
 	},
 	playRound: function() {
 		// button that calls drawCard, first checks which player turn and if there are actions left. 
@@ -90,37 +96,31 @@ var playState = {
 		}
 	},
 	drawCard: function() {
-		console.log('draw card');
 		if(this.playerActions == 0){
 			alert('No more moves left, please end your turn');
 			return;
 		}
 		this.playerActions -= 1;
 			
-		// math.random calls a float between 0 and 1, this is multiplied with the length of the deck,
-		// and rounded up to the nearest integer.
-		var i = Math.floor(Math.random() * this.deck.length);	
+		console.log(this.drawPile);
+		var card = this.game.rnd.integerInRange(0, this.deck.length);
 		//try find one that wasnt drawn yet if needed.
-		while(!this.drawPile.includes(this.deck[i])){
-			i = Math.floor(Math.random() * this.deck.length);
+		while(!this.drawPile.includes(this.deck[card])){
+			card = this.game.rnd.integerInRange(0, this.deck.length);
 		}
-		var card = this.deck[i];
-		this.drawPile.push(card);
+		//remove from the avaliable draw pile
+		this.drawPile.splice(this.drawPile.indexOf(this.deck[card]), 1);
+		//var card = this.deck[i];
+		console.log('player draws: ' + this.deck[card].description + ', which is: ' + card);
+		console.log('actions left: ' + this.playerActions);
 
 		if(this.player1Turn){
-			console.log('player1 draws: ' + card.description + ' which is: ' + this.deck.indexOf(card));
-			this.player1hand.splice(0, 0, this.deck.indexOf(card));
-
-			console.log('player 1 hand size: ' + this.player1hand.length);
-			console.log('actions left: ' + this.playerActions);
+			this.player1hand.push(card);
+			console.log('player hand size: ' + this.player1hand.length);
 		}
 		else if(this.player2Turn){
-			console.log('player2 draws: ');
-			console.log(card.description);
-			this.player2hand.splice(0, 0, this.deck.indexOf(card));
-
-			console.log('player 2 hand size :' + this.player2hand.length);
-			console.log('actions left: ' + this.playerActions);
+			this.player2hand.push(card);
+			console.log('player hand size :' + this.player2hand.length);
 		}
 	},
 	showHand: function() {
@@ -134,9 +134,10 @@ var playState = {
 				let spriteIndex = this.getSpriteIndex(this.player1hand[i]);
 				//console.log('country: ' + countryIndex + ', sprite: ' + spriteIndex);
 				this.shownCards[i] = game.add.sprite(
-					i * 181, 1000, 
+					181 / 2 + i * 181, 800, 
 					'cards' + countryIndex, spriteIndex);
 				this.shownCards[i].anchor.set(.5, .5);
+				this.shownCards[i].scale.set(1, 1);
 			}
 			console.log('showing player 1 hand');
 		} else if (this.player2Turn) {
@@ -145,7 +146,7 @@ var playState = {
 				let spriteIndex = this.getSpriteIndex(this.player2hand[i]);
 				//console.log('country: ' + countryIndex + ', sprite: ' + spriteIndex);
 				this.shownCards[i] = game.add.sprite(
-					i * 181, 1000, 
+					181 / 2 + i * 181, 800, 
 					'cards' + countryIndex, spriteIndex);
 				this.shownCards[i].anchor.set(.5, .5);
 			}
@@ -160,8 +161,6 @@ var playState = {
 		}
 	},
 	endTurn: function() {
-		console.clear();
-		this.hideHand();
 // ends the player turn, first checks if there are actions left, switches between player turns and resets the playerActions to 2 actions.
 		if((this.player1Turn && this.playerActions != 0) || (this.player2Turn && this.playerActions !=0)) {
 			alert('you still have moves left!1!!11!');
@@ -178,12 +177,29 @@ var playState = {
 		} else {
 			console.log('something went wrong on endTurn');
 		}
+		//console.clear();
+		if(this.player2Turn){
+			console.log('Player 1');
+		}else{
+			console.log('Player 2');
+		}
+		this.hideHand();
 	},
 	restartGame: function() {
 		game.state.start('menu');
 	},
 	update: function() {
 		millWieken.angle += 0.5;
+	},
+
+	//Game Functions
+	addCard: function(player) {
+		if(player){
+
+		}
+		else{
+
+		}
 	},
 
 	//Helper functions
