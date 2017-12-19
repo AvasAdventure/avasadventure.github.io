@@ -24,13 +24,12 @@ var playState = {
 		restartButton = game.add.button(90, 40, 'restart-button', this.restartGame, this);
 		restartButton.anchor.set(0.3, 0.3);
 		restartButton.scale.set(0.5, 0.5);
-
 // ava 
 		var avaShrug = game.add.sprite(game.world.centerX - 500, game.world.centerY + 50,'ava_shrug');
 		avaShrug.anchor.set(0.3, 0.3);
 		avaShrug.scale.set(0.2, 0.2);
 		var wink = avaShrug.animations.add('wink');
-		avaShrug.animations.play('wink', 1, true);
+		avaShrug.animations.play('wink', 1, true);		
 	},
 	create: function() {
 // sets up game. stores the JSON containing the card deck in the variable 'deck'
@@ -45,9 +44,6 @@ var playState = {
 		this.deck = combinedDeck;
 		this.drawPile = combinedDeck;
 		this.discardPile = [];
-		//console.log(deckAmount);
-		//console.log(this.deck);
-
 		this.player1hand = [];
 		this.player2hand = [];
 		this.playerActions = 2;
@@ -101,18 +97,17 @@ var playState = {
 			return;
 		}
 		this.playerActions -= 1;
-			
-		console.log(this.drawPile);
-		var card = this.game.rnd.integerInRange(0, this.deck.length);
+		var card = this.game.rnd.integerInRange(0, this.deck.length - 1);
 		//try find one that wasnt drawn yet if needed.
-		while(!this.drawPile.includes(this.deck[card])){
-			card = this.game.rnd.integerInRange(0, this.deck.length);
-		}
+//		while(!this.drawPile.includes(this.deck[card])){
+//			card = this.game.rnd.integerInRange(0, this.deck.length);
+//		}
+		console.log(this.drawPile[card])
+		console.log('player draws: ' + this.drawPile[card].description + ', which is: ' + card);
+		console.log('actions left: ' + this.playerActions);
 		//remove from the avaliable draw pile
 		this.drawPile.splice(this.drawPile.indexOf(this.deck[card]), 1);
 		//var card = this.deck[i];
-		console.log('player draws: ' + this.deck[card].description + ', which is: ' + card);
-		console.log('actions left: ' + this.playerActions);
 
 		if(this.player1Turn){
 			this.player1hand.push(card);
