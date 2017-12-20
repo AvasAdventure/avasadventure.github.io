@@ -14,6 +14,7 @@ var loadState = {
 		game.load.image('endturn-button', 'assets/endturn-button.png');
 		game.load.image('restart-button', 'assets/restart-button.png');
 		game.load.image('wieken', 'assets/wieken.png');
+		game.load.image('points-area', 'assets/pointsArea.png');
 		game.load.image('menu-container', 'assets/menu-container.png');
 		
 		//Load the card deck list

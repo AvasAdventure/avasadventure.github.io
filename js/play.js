@@ -1,9 +1,6 @@
 var playState = {
 	preload: function() {
-		background = game.add.tileSprite(0, 0, 1920, 1079, 'background');
 		//1193, 417
- 		millWieken = game.add.sprite(1200, 420, 'wieken');
- 		millWieken.anchor.set(0.5, 0.5);
 		// adds UI buttons
 		// first adds the drawButton, which call drawcard on click.
 		drawButton = game.add.button(700, game.world.height - 75, 'draw-button', this.drawCard, this);
@@ -22,13 +19,19 @@ var playState = {
 		endTurnButton.anchor.set(0.3, 0.3);
 		endTurnButton.scale.set(0.5, 0.5);
 		// button to restart game
-		restartButton = game.add.button(90, 40, 'restart-button', this.restartGame, this);
+		restartButton = game.add.button(game.world.centerX, 40, 'restart-button', this.restartGame, this);
 		restartButton.anchor.set(0.3, 0.3);
 		restartButton.scale.set(0.5, 0.5);
+		// area to play the point cards
+		pointsArea = game.add.sprite(game.world.centerX/2, game.world.centerY - 100, 'points-area');
+		pointsArea.anchor.set(0.5, 0.5);
+		pointsArea.scale.set(0.8, 0.8); 
+
+		pointsText = game.add.text(50, 220, 'Your Score: ', { fill: '#cccccc'});
 		// ava 
-		var avaShrug = game.add.sprite(game.world.centerX - 500, game.world.centerY + 50,'ava_shrug');
+		var avaShrug = game.add.sprite(1500, 200,'ava_shrug');
 		avaShrug.anchor.set(0.3, 0.3);
-		avaShrug.scale.set(0.2, 0.2);
+		avaShrug.scale.set(0.5, 0.5);
 		var wink = avaShrug.animations.add('wink');
 		avaShrug.animations.play('wink', 1, true);		
 	},
@@ -48,11 +51,12 @@ var playState = {
 			this.deck.push(combinedDeck[i]);
 			this.drawPile.push(combinedDeck[i]);
 		}
-
 		this.discardPile = [];
 		this.player1hand = [];
-		this.player2hand = [];
+		this.player1score = 0;
 		this.player1pointCards = [];
+		this.player2hand = [];
+		this.player2score = 0;
 		this.player2pointCards = [];
 		this.playerActions = maxPlayerActions;
 		//Randomly decided who starts first.
@@ -68,7 +72,7 @@ var playState = {
 			alert('Player 2 starts!');
 		}
 		
-		console.clear();
+//		console.clear();
 		if(this.player1Turn){
 			console.log('Player 1');
 		}else{
@@ -86,13 +90,12 @@ var playState = {
 		this.showHand();
 	},
 	update: function() {
-		millWieken.angle += 0.5;
-		//get mouse location
+
+				//get mouse location
 		/*if(game.input.activePointer.leftButton.isDown){
 			console.log(game.input.activePointer.worldX + ', ' + game.input.activePointer.worldY);
 		}*/
 	},
-
 	//Game Control
 	drawCard: function() {
 		if(this.playerActions == 0){
@@ -129,15 +132,18 @@ var playState = {
 					cardWidth / 2 + i * cardWidth, 800, 
 					'cards' + countryIndex, spriteIndex);
 				this.shownCards[i].anchor.set(.5, .5);
-				this.shownCards[i].scale.set(1, 1);
 				this.shownCards[i].inputEnabled = true;
 				//Playing cards
 				this.shownCards[i].events.onInputDown.add(function (target, pointer) {
 					if(pointer.leftButton.isDown){
 						this.playCardAction(this.player1hand[this.shownCards.indexOf(target)]);
+						this.player1hand.splice(this.shownCards[i], 1);
+						this.add.tween(this.shownCards[i]).to({y: 1980, x: 0}, 100, null, true, 10) 
 					}
 					else if(pointer.middleButton.isDown){
 						this.playCardPoints(this.player1hand[this.shownCards.indexOf(target)]);
+						this.player1hand.splice(this.shownCards[i], 1);
+						this.add.tween(this.shownCards[i]).to({y: game.world.centerY -100, x: game.world.centerX - i * cardWidth }, 300, null, true, 10);
 					}
 				}, this);
 				this.shownCards[i].events.onInputOver.add(function (target) {
@@ -165,10 +171,15 @@ var playState = {
 				//Playing cards
 				this.shownCards[i].events.onInputDown.add(function (target, pointer) {
 					if(pointer.leftButton.isDown){
-						this.playCardAction(this.player1hand[this.shownCards.indexOf(target)]);
+						this.playCardAction(this.player2hand[this.shownCards.indexOf(target)]);
+						this.player2hand.splice(this.shownCards[i], 0);
+						this.add.tween(this.shownCards[i]).to({y: 1980, x: 0}, 100, null, true, 10) 
 					}
 					else if(pointer.middleButton.isDown){
-						this.playCardPoints(this.player1hand[this.shownCards.indexOf(target)]);
+						this.playCardPoints(this.player2hand[this.shownCards.indexOf(target)]);
+						console.log(this.shownCards[i]);
+						this.player2hand.splice(this.shownCards[i], 0);
+						this.add.tween(this.shownCards[i]).to({y: game.world.centerY, x: game.world.centerX}, 300, null, true, 10);	
 					}
 				}, this);
 				this.shownCards[i].events.onInputOver.add(function (target) {
@@ -209,7 +220,7 @@ var playState = {
 			alert('player 2 turn ended \nplayer 1 turn starts');
 		}
 
-		console.clear();
+//		console.clear();
 		if(this.player1Turn){
 			console.log('Player 1');
 		}else{
@@ -223,10 +234,26 @@ var playState = {
 
 	//Playing cards
 	// card is card number from current players hand
-	playCardPoints: function(card){
+	playCardPoints: function(card, player){
+		var scoreText;
 		var cardData = this.deck[card];
-		console.log('Played a ' + cardData.points + ' points card!');
+		if(this.player1Turn){
+ 			this.player1score = this.player1score + Number(cardData.points);
+ 			this.player1pointCards.push(cardData.points);
+		} else {
+ 			this.player2score = this.player2score + Number(cardData.points);
+			this.player2pointCards.push(cardData.points);
+		}
 	},
+//	totalScore: function(player) {
+//		if(player) {
+//			console.log(this.player1score);
+//			pointsText = game.add.text(200, 220, this.player1score, { fill: '#cccccc'});			
+// 		} else {
+//			console.log(this.player2score);
+//			pointsText = game.add.text(200, 220, this.player2score, { fill: '#cccccc'});
+//		}
+//},
 	playCardAction: function(card){
 		///It would be cool to use like 'eval(githubrepo/cardAction.js)' in the end. #Moddability :P
 
