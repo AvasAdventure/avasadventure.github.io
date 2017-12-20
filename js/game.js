@@ -2,7 +2,7 @@
 var deckStorageLink = "https://raw.githubusercontent.com/AvasAdventure/Card-Decks/master/";
 var deckLength = 10; //should be 10 later
 var maxPlayerActions = 2;
-var maxHandSize = 5; //to turn off set to high nr.
+var maxHandSize = 10; //to turn off set to high nr.
 var cardWidth = 181;
 var cardHeight = 252;
 
