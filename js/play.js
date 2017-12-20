@@ -71,6 +71,14 @@ var playState = {
 		}else{
 			console.log('Player 2');
 		}
+
+		//add 4 starting cards
+		for(var i = 0; i < 4; i++){
+			this.addCardRandom(true);
+		}
+		for(var i = 0; i < 4; i++){
+			this.addCardRandom(false);
+		}
 	},
 	drawCard: function() {
 		if(this.playerActions == 0){
@@ -173,12 +181,68 @@ var playState = {
 	},
 
 	//Game Functions
-	addCard: function(player) {
-		if(player){
+	//player = true -> p1
+	//player = false -> p2
+	addCardRandom: function(player) {
+		var card = this.game.rnd.integerInRange(0, this.drawPile.length - 1);
+		var card_ = this.drawPile[card];
+		this.drawPile.splice(card, 1);
+		console.log('card: ' + card + ' = ' + this.deck.indexOf(card_) + '\ndrawPile - deck');
+		card = this.deck.indexOf(card_);
 
+		if(player){
+			this.player1hand.push(card);
+			console.log('player hand size: ' + this.player1hand.length);
 		}
 		else{
+			this.player2hand.push(card);
+			console.log('player hand size: ' + this.player2hand.length);
+		}
+	},
+	//card is the card number from drawPile
+	addCard: function(player, card) {
+		var card_ = this.drawPile[card];
+		this.drawPile.splice(card, 1);
+		console.log('card: ' + card + ' = ' + this.deck.indexOf(card_) + '\ndrawPile - deck');
+		card = this.deck.indexOf(card_);
 
+		if(player){
+			this.player1hand.push(card);
+			console.log('player hand size: ' + this.player1hand.length);
+		}
+		else{
+			this.player2hand.push(card);
+			console.log('player hand size: ' + this.player2hand.length);
+		}
+	},
+
+	//player = true -> p1
+	//player = false -> p2
+	removeCardRandom: function(player){
+		if(player){
+			var card = this.game.rnd.integerInRange(0, this.player1hand.length - 1);
+			var card_ = this.player1hand[card];
+			this.player1hand.splice(card, 1);
+			this.discardPile.push(card_);
+		}
+		else{
+			var card = this.game.rnd.integerInRange(0, this.player2hand.length - 1);
+			var card_ = this.player2hand[card];
+			this.player2hand.splice(card, 1);
+			this.discardPile.push(card_);
+		}
+	},
+	//card is the card number from hand
+	removeCard: function(player, card){
+		if(player){
+			var card_ = this.player1hand[card];
+			this.player1hand.splice(card, 1);
+			this.discardPile.push(card_);
+		}
+		else{
+			var card_ = this.player2hand[card];
+			this.player2hand.splice(card, 1);
+			this.discardPile.push(card_);
 		}
 	},
 
