@@ -16,7 +16,6 @@ game.state.add('secondLoad', secondLoadState);
 game.state.add('menu', menuState);
 game.state.add('options', optionsState);
 game.state.add('play', playState);
-game.state.add('restart', restartState);
 
 //Start game
 game.state.start('boot');
