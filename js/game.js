@@ -1,12 +1,15 @@
+//Game Configuration
 var deckStorageLink = "https://raw.githubusercontent.com/AvasAdventure/Card-Decks/master/";
 var deckLength = 5; //should be 10 later
 var maxPlayerActions = 2;
-var maxHandSize = 5;
+var maxHandSize = 5; //to turn off set to high nr.
+var cardWidth = 181;
+var cardHeight = 252;
 
-// Start Phaser
+//Start Phaser
 var game = new Phaser.Game(1920, 1079, Phaser.CANVAS, '');
 
-// add game states: 'boot', 'load', 'menu', 'options', 'play', 'finish'
+//Add Game States
 game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('secondLoad', secondLoadState);

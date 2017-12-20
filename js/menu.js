@@ -1,7 +1,7 @@
 var menuState = {
 	create: function() {
 		var background = game.add.tileSprite(0, 0, 1920, 1079, 'background');
- 			millWieken = game.add.sprite(game.world.centerX + 500, game.world.centerY -290, 'wieken');
+ 			millWieken = game.add.sprite(1200, 420, 'wieken');
 			millWieken.anchor.set(0.5, 0.5);
 			 
  // fade in menu, containing start and options buttins	
