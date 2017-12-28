@@ -16,7 +16,7 @@ var loadState = {
 		game.load.image('wieken', 'assets/wieken.png');
 		game.load.image('points-area', 'assets/pointsArea.png');
 		game.load.image('menu-container', 'assets/menu-container.png');
-		
+		game.load.image('card-back', 'assets/card-back.png');
 		//Load the card deck list
 		try {
 			game.load.json('card-decks', deckStorageLink + "countries.json");
