@@ -1,8 +1,9 @@
 var playState = {
 	preload: function() {
-		//1193, 417
+		var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
 		// adds UI buttons
 		// first adds the drawButton, which call drawcard on click.
+		
 		drawButton = game.add.button(700, game.world.height - 75, 'draw-button', this.drawCard, this);
 		drawButton.anchor.set(0.3, 0.3);
 		drawButton.scale.set(0.5, 0.5);
@@ -23,17 +24,17 @@ var playState = {
 		restartButton.anchor.set(0.3, 0.3);
 		restartButton.scale.set(0.5, 0.5);
 		// area to play the point cards
-		pointsArea = game.add.sprite(game.world.centerX/2, game.world.centerY - 100, 'points-area');
+		/*pointsArea = game.add.sprite(game.world.centerX/2, game.world.centerY - 100, 'points-area');
 		pointsArea.anchor.set(0.5, 0.5);
 		pointsArea.scale.set(0.8, 0.8); 
-
-		pointsText = game.add.text(50, 220, 'Your Score: ', { fill: '#cccccc'});
+		pointsText = game.add.text(50, 220, 'Your Score: ', { fill: '#cccccc'});*/
 		// ava 
+		/*
 		var avaShrug = game.add.sprite(1500, 200,'ava_shrug');
 		avaShrug.anchor.set(0.3, 0.3);
 		avaShrug.scale.set(0.5, 0.5);
 		var wink = avaShrug.animations.add('wink');
-		avaShrug.animations.play('wink', 1, true);		
+		avaShrug.animations.play('wink', 1, true);		*/
 	},
 	create: function() {
 		//sets up game. stores the JSON containing the card deck in the variable 'deck'
