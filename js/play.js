@@ -1,421 +1,524 @@
 var playState = {
 	preload: function() {
-		var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
-		// adds UI buttons
-		// first adds the drawButton, which call drawcard on click.
-		
-		drawButton = game.add.button(700, game.world.height - 75, 'draw-button', this.drawCard, this);
-		drawButton.anchor.set(0.3, 0.3);
-		drawButton.scale.set(0.5, 0.5);
-		// button to show player hand, 
-		showHandButton = game.add.button(200, game.world.height - 75, 'showhand-button', this.showHand, this);
-		showHandButton.anchor.set(0.3, 0.3);
-		showHandButton.scale.set(0.5, 0.5);
-		// button to hide player hand
-		hideHandButton = game.add.button(450, game.world.height - 75, 'hidehand-button', this.hideHand, this);
-		hideHandButton.anchor.set(0.3,0.3);
-		hideHandButton.scale.set(0.5, 0.5);
-		// button to end turn
-		endTurnButton = game.add.button(1200, game.world.height - 75, 'endturn-button', this.endTurn, this);
-		endTurnButton.anchor.set(0.3, 0.3);
-		endTurnButton.scale.set(0.5, 0.5);
-		// button to restart game
-		restartButton = game.add.button(game.world.centerX, 40, 'restart-button', this.restartGame, this);
-		restartButton.anchor.set(0.3, 0.3);
-		restartButton.scale.set(0.5, 0.5);
-		// area to play the point cards
-		/*pointsArea = game.add.sprite(game.world.centerX/2, game.world.centerY - 100, 'points-area');
-		pointsArea.anchor.set(0.5, 0.5);
-		pointsArea.scale.set(0.8, 0.8); 
-		pointsText = game.add.text(50, 220, 'Your Score: ', { fill: '#cccccc'});*/
-		// ava 
-		/*
-		var avaShrug = game.add.sprite(1500, 200,'ava_shrug');
-		avaShrug.anchor.set(0.3, 0.3);
-		avaShrug.scale.set(0.5, 0.5);
-		var wink = avaShrug.animations.add('wink');
-		avaShrug.animations.play('wink', 1, true);		*/
-	},
-	create: function() {
-		//sets up game. stores the JSON containing the card deck in the variable 'deck'
-		console.log('setting up game');
-		//Combine all card decks into one big JSON
-		this.deck = [];
+        var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
+
+        //for fading
+        this.fadeSprite = game.add.sprite(0, 0, 'black');
+        this.fadeSprite.alpha = 0;
+        this.fadeSprite.width = 1920;
+        this.fadeSprite.height = 1079;
+
+        //Load cards
+        var jsons = [];
 		for(let i = 0; i < deckAmount; i++){
-			let deck1 = game.cache.getJSON('cards' + i);
-			this.deck = this.deck.concat(deck1);
-		}
-		var pile = [];
+			let deck = game.cache.getJSON('cards' + i);
+			jsons = jsons.concat(deck);
+        }
+        this.deck = jsons;
+        
+        //end turn button
+        var endTurnButton = game.add.button(0, 0, 'endturn-button', function(){
+            playState.endTurn();
+        });
+        endTurnButton.scale.set(.5,.5);
+
+        //Draw pile
+        var drawPileButton = game.add.button(1760, 540, 'card-back', function(){
+            if(playState.blockInput){
+                return;
+            }
+            playState.drawCard();
+        });
+        drawPileButton.width = cardWidth;
+        drawPileButton.height = cardHeight;
+        drawPileButton.anchor.set(0.5, 0.5);
+
+        var dpile = [];
 		for(let i = 0; i < this.deck.length; i++){
-			pile[i] = i;
+			dpile[i] = i;
 		}
-		this.drawPile = this.shuffleDeck(pile);
-		console.log(this.drawPile);
+        this.drawPile = cardFunctions.shuffle(dpile);
+        this.discardPile = [];
+        this.discardPileSpr;
+        this.p1pointCards = [];
+        this.p2pointCards = [];
+        this.playedPointSprites = [];
+        this.shownHandCards = [];
+        this.blockInput = false;
+        
+        //Replay sequence?!
+        this.replaySequence = []; //0=draw, 1=action, 2=point
+        this.replayCards = [];
+        this.rsAction = [];
+        this.rsPoints = 0;
+        //Setup players
+        ///playerTurn = true -> p1 else p2
+        /*if(game.rnd.integerInRange(1, 2) == 1){
+            this.playerTurn = true;
+        }
+        else{
+            this.playerTurn = false;
+        }*/
+        this.playerTurn = true;
+        this.p1hand = [];
+        this.p2hand = [];
+        
+        this.dealCard(true, 4);
+        this.dealCard(false, 4);
+    },
+    create: function() {
+        
+    },
+    update: function() {
+        if(game.time.events.duration == 0){
+            playState.blockInput = false;
+        }else{
+            playState.blockInput = true;
+        }
+    },
+    render: function() {
 
-		this.discardPile = [];
-		this.player1hand = [];
-		this.player1score = 0;
-		this.player1pointCards = [];
-		this.player2hand = [];
-		this.player2score = 0;
-		this.player2pointCards = [];
-		this.shownPointCards = [];
-		this.playerActions = maxPlayerActions;
-		//Randomly decided who starts first.
-		//FOR DEBUG ALWAYS P1
-		var playerStart = 1;//this.game.rnd.integerInRange(1, 2);
-		if(playerStart == 1){
-			this.player1Turn = true;
-			alert('Player 1 starts!');
-		}else{
-			this.player1Turn = false;
-			alert('Player 2 starts!');
-		}
-		
-//		console.clear();
-		if(this.player1Turn){
-			console.log('Player 1');
-		}else{
-			console.log('Player 2');
-		}
+        game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+    
+    },
 
-		//add 4 starting cards
-		for(var i = 0; i < 4; i++){
-			this.dealCard(true);
-		}
-		for(var i = 0; i < 4; i++){
-			this.dealCard(false);
-		}
-		
-		this.showHand();
-	},
-	update: function() {
+    dealCard: function(player, amount) {
+        for(let i = 0; i < amount; i++){
+            if(player == playState.playerTurn){ //should i render it?
+                game.time.events.add(500 * i, function() { //wait a bit before dealing next card
+                    let card = playState.drawPile[0];
+                    playState.drawPile.splice(0, 1);     
+                    let handSize;
+                    if(playState.playerTurn){
+                        playState.p1hand.push(card);
+                        handSize = playState.p1hand.indexOf(card);
+                    }else{
+                        playState.p2hand.push(card);
+                        handSize = playState.p2hand.indexOf(card);
+                    }
+                    let cardSpr = cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight);
+                    playState.shownHandCards.push(cardSpr);
+                    let newX = (385 + (cardWidth/2) * handSize);
+                    let newY = 900;
+                    game.add.tween(cardSpr).to({x: newX, y: newY}, 500, null, true, 0) //to hand
+                    .onUpdateCallback(function(){
+                        playState.blockInput = true;
+                    }, this)
+                    .onComplete.add(function(){
+                        playState.blockInput = false;
+                    }, this);
+                    
+                    cardFunctions.addInteractions(cardSpr);
+                });
+            }else{
+                let card = playState.drawPile[0];
+                playState.drawPile.splice(0, 1);
+                if(player){
+                    this.p1hand.push(card);
+                }else{
+                    this.p2hand.push(card);
+                }
+            }
+        }
+    },
+    drawCard: function(){
+        //todo check action count
 
-				//get mouse location
-		/*if(game.input.activePointer.leftButton.isDown){
-			console.log(game.input.activePointer.worldX + ', ' + game.input.activePointer.worldY);
-		}*/
-	},
-	//Game Control
-	drawCard: function() {
-		if(this.playerActions == 0){
-			alert('No more moves left, please end your turn');
-			return;
-		}
-		if(this.drawPile.length == 0){
-			alert('No more cards in the Draw Pile.');
-			return;
-		}
-		if(this.player1Turn && this.player1hand.length >= maxHandSize){
-			alert('Your hand is full!');
-			return;
-		}
-		if(!this.player1Turn && this.player2hand.length >= maxHandSize){
-			alert('Your hand is full!');
-			return;
-		}
+        //Save replay
+        playState.replaySequence.push(0); //0=draw, 1=action, 2=point
 
-		this.playerActions -= 1;
+        this.dealCard(this.playerTurn, 1);
+    },
+    renderCards(){
+        //Render hand
+        let cards = [];
+        let pointCards = [];
+        let otherPointCards = 0;
+        if(playState.playerTurn){
+            cards = playState.p1hand;
+            pointCards = playState.p1pointCards;
+            otherPointCards = playState.p2pointCards.length;
+        }else{
+            cards = playState.p2hand;
+            pointCards = playState.p2pointCards;
+            otherPointCards = playState.p1pointCards.length;
+        }
+        otherPointCards -= playState.rsPoints;
 
-		this.dealCard(this.player1Turn);
-		this.showHand();
-	},
-	showHand: function() {
-		this.hideHand();
-		// adds cards to the screen, depending on the length of the player hand.
-		this.shownCards = [];
-		let cardCount;
-		if(this.player1Turn){
-			cardCount = this.player1hand.length;
-		}
-		else{
-			cardCount = this.player2hand.length;
-		}
+        for(let i = 0; i < cards.length; i++){
+            let cardSpr = cardFunctions.showCardSprite(cards[i], (385 + (cardWidth/2) * playState.shownHandCards.length), 900, cardWidth, cardHeight);
+            playState.shownHandCards.push(cardSpr);
+            cardSpr.moveDown(); //move under the fader
+            cardFunctions.addInteractions(cardSpr);
+        }
+        for(let i = 0; i < pointCards.length; i++){
+            let cardSpr = game.add.sprite(460 + (cardWidth/2) * (playState.playedPointSprites.length), game.world.centerY, 'card-back');
+            cardSpr.anchor.set(0.5, 0.5);
+            cardSpr.width = cardWidth;
+            cardSpr.height = cardHeight;
+            playState.playedPointSprites.push(cardSpr);
+            cardSpr.moveDown(); //move under the fader
+        }
+        for(let i = 0; i < otherPointCards; i++){
+            let cardSpr = game.add.sprite(535 + ((207/2) * i), 186, 'card-back');
+            cardSpr.anchor.set(0.5, 0.5);
+            cardSpr.width = 207;
+            cardSpr.height = 288;
+            playState.playedPointSprites.push(cardSpr);
+            cardSpr.moveDown(); //move under the fader
+        }
+    },
+    updateHandCards(){
+        for(let i = 0; i < playState.shownHandCards.length; i++){
+            let card = playState.shownHandCards[i];
+            let newX = (385 + (cardWidth/2) * i);
+            let newY = 900;
+            game.add.tween(card).to({x: newX, y: newY}, 500, null, true, 0)
+            .onUpdateCallback(function(){
+                playState.blockInput = true;
+            }, this)
+            .onComplete.add(function(){
+                playState.blockInput = false;
+            }, this);
+        }
+    },
+    playPoints: function(card){
+        //Check Actions
+        //card = json data
+    },
+    playAction: function(card){
+        //Check Actions
+        //card = json data
+    },
+    endTurn: function(){
+        if(playState.blockInput){return;}
+        playState.blockInput = true;
+        let alphaTween = playState.fadeScreen(true);
+        alphaTween.onComplete.add(function(){
+            
+            playState.playerTurn = !playState.playerTurn;
 
-		for(let i = 0; i < cardCount; i++){
-			let countryIndex;
-			let spriteIndex;
-			if(this.player1Turn){
-				countryIndex = this.getCountryIndex(this.player1hand[i]);
-				spriteIndex = this.getSpriteIndex(this.player1hand[i]);
-			}else{
-				countryIndex = this.getCountryIndex(this.player2hand[i]);
-				spriteIndex = this.getSpriteIndex(this.player2hand[i]);
-			}
-			let spr =  game.add.sprite(
-				cardWidth / 2 + i * cardWidth, 800, 
-				'cards' + countryIndex, spriteIndex);
-			spr.anchor.set(0.5, 0.5);
-			spr.inputEnabled = true;
-			this.shownCards[i] = spr;
+            //Remove all cards from the screen.
+            for(let i = 0; i < playState.shownHandCards.length; i++){
+                playState.shownHandCards[i].destroy();
+            }
+            playState.shownHandCards = [];
+            for(let i = 0; i < playState.playedPointSprites.length; i++){
+                playState.playedPointSprites[i].destroy();
+            }
+            playState.playedPointSprites = [];
+            for(let i = 0; i < playState.replayCards.length; i++){
+                playState.replayCards[i].destroy();
+            }
+            playState.replayCards = [];
 
-			//Playing cards
-			this.shownCards[i].events.onInputDown.add(function (target, pointer) {
-				if(this.playerActions == 0){
-					alert('No more moves left, please end your turn');
-					return;
-				}
+            playState.renderCards();
 
-				let i = this.shownCards.indexOf(target);
-				if(pointer.leftButton.isDown){
-					this.shownCards[i].scale.set(1, 1);
-					let card; 
-					if(this.player1Turn){
-						card = this.player1hand[i];
-					} else {
-						card = this.player2hand[i];
-					}
-					this.playCardAction(card);
-					this.shownCards[i].destroy();
-				}
-				else if(pointer.rightButton.isDown){
-					let card;
-					if(this.player1Turn){
-						card = this.player1hand[i]
-					}
-					else{
-						card = this.player2hand[i]
-					}
-					target.scale.set(1, 1);
-					this.playCardPoints(card);
-					this.shownPointCards.push(this.shownCards[i]);
-					this.shownCards.splice(i, 1);
+            //Add text
+            let playerText;
+            if(!playState.playerTurn){
+                playerText = game.add.text(game.world.centerX, game.world.centerY - 200, 'Player 2', {fill: '#ffffff', fontSize: 100});
+            }else{
+                playerText = game.add.text(game.world.centerX, game.world.centerY - 200, 'Player 1', {fill: '#ffffff', fontSize: 72});
+            }
+            playerText.anchor.set(0.5, 0.5);
+            playerText.bringToTop();
+            //NextButton
+            let button = game.add.button(game.world.centerX, game.world.centerY,'next-button', function(){
+                button.destroy();
+                playerText.destroy();
+                alphaTween = playState.fadeScreen(false);
+                alphaTween.onComplete.add(function() {
+                    playState.playReplay();
+                    
+                }, this);
+            });
+            button.anchor.set(0.5, 0.5);
+        }, this);
+    },
+    fadeScreen: function(out){
+        playState.fadeSprite.bringToTop();
+        if(out){
+            return game.add.tween(playState.fadeSprite).to({alpha: 1}, 500, null, true, 0);
+        }else{
+            return game.add.tween(playState.fadeSprite).to({alpha: 0}, 500, null, true, 0);
+        }
+    },
+    playReplay: function(){
+        let otherPointCardCount;
+        if(playState.playerTurn){
+            otherPointCardCount = playState.p2pointCards.length;
+        }else{
+            otherPointCardCount = playState.p1pointCards.length;
+        }
+        console.log(otherPointCardCount + '-' + playState.rsPoints);
+        otherPointCardCount -= playState.rsPoints;
+        let pointAmount = otherPointCardCount;
+        let actionAmount = 0;
+        let seq = playState.replaySequence;
+        let rsAction = playState.rsAction;
+        playState.rsPoints = 0;
+        playState.rsAction = [];
+        playState.replaySequence = [];
 
-					let x; 
-					let y = game.world.centerY - 100;
-					if(this.player1Turn){
-						x = this.player1pointCards.length * cardWidth;
-					} else {
-						x = this.player2pointCards.length * cardWidth;
-					}
+        for(let i = 0; i < seq.length; i++){
+            game.time.events.add(800 * i, function() {
+                switch(seq[i]){
+                    case 0: //draw
+                        var spr = game.add.sprite(1760, 540, 'card-back');
+                        spr.width = cardWidth;
+                        spr.height = cardHeight;
+                        spr.anchor.set(0.5, 0.5);
+                        playState.replayCards.push(spr);
+                        var newX = game.world.centerX;
+                        var newY = 0 - cardHeight;
+                        var tween = game.add.tween(spr).to({x: newX, y: newY, width: 207, height: 288}, 500, null, true, 0)
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            playState.blockInput = false;
+                        }, this);
+                        break;
+                    case 1: //action
+                        var cardSpr = game.add.sprite(game.world.centerX, 0 - cardHeight, rsAction[actionAmount]);
+                        cardSpr.width = 207;
+                        cardSpr.height = 288;
+                        cardSpr.anchor.set(0.5, 0.5);
+                        playState.replayCards.push(cardSpr);
+                        var actionX = game.world.centerX;
+                        var actionY = game.world.centerY;
+                        game.add.tween(cardSpr).to({x: actionX, y: actionY, width: cardWidth, height: cardHeight}, 500, null, true, 0) //to middle
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            game.time.events.add(500, function() { //dramatic 'play' effect
+                                let backcard = cardFunctions.flipCard(cardSpr);
+                                let backX = 160;
+                                game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)  //to discard pile
+                                .onUpdateCallback(function(){
+                                    playState.blockInput = true;
+                                }, this)
+                                .onComplete.add(function(){
+                                    if(playState.discardPileSpr == undefined){
+                                        playState.discardPileSpr = game.add.sprite(160, game.world.centerY, 'card-back');
+                                        playState.discardPileSpr.anchor.set(0.5, 0.5);
+                                        playState.discardPileSpr.width = cardWidth;
+                                        playState.discardPileSpr.height = cardHeight;
+                                    }
+                                    backcard.destroy();
+                                    playState.blockInput = false;
+                                }, this);
+                            });
+                        }, this);
+                        
+                        game.add.tween(cardSpr.scale).to({x: 1.9, y: 1.9}, 500, null, true, 0); //scaling
+                        actionAmount += 1;
+                        break;
+                    case 2: //point
+                        var spr = game.add.sprite(game.world.centerX, 0 - cardHeight, 'card-back');
+                        spr.width = cardWidth;
+                        spr.height = cardHeight;
+                        spr.anchor.set(0.5, 0.5);
+                        playState.replayCards.push(spr);
+                        var newXx = 535 + ((207/2) * pointAmount);
+                        var newYy = 186;
+                        var tween = game.add.tween(spr).to({x: newXx, y: newYy, width: 207, height: 288}, 500, null, true, 0)
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            playState.blockInput = false;
+                        }, this);
+                        pointAmount += 1;
+                        break;
+                } 
+            });
+        }
+    }
+}
 
-					this.add.tween(target).to({y: y, x: x}, 300, null, true, 10);	
-					this.showHand();
-				}
-			}, this);
-			this.shownCards[i].events.onInputOver.add(function (target) {
-				target.scale.set(1.2, 1.2);
-			}, this);
-			this.shownCards[i].events.onInputOut.add(function (target) {
-				target.scale.set(1, 1);
-			}, this);
+var cardFunctions = {
+    shuffle: function(cards) {
+        var currentIndex = cards.length, temporaryValue, randomIndex;
+		while (0 !== currentIndex) {
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+			temporaryValue = cards[currentIndex];
+			cards[currentIndex] = cards[randomIndex];
+			cards[randomIndex] = temporaryValue;
 		}
-	},
-	hideHand: function() {
-		for(var i in this.shownCards){
-			this.shownCards[i].destroy();
-		}
-	},
-	showPointCards: function(){
-		for(var i in this.shownPointCards){
-			this.shownPointCards[i].destroy();
-		}
-		if(this.player1Turn){
-			//your cards
-			for(let i = 0; i < this.player1pointCards.length; i++){
-				//y: game.world.centerY -100, x: game.world.centerX - i * cardWidth
-				let x = game.world.centerX - i * cardWidth;
-				let y = game.world.centerY -100;
-				let countryIndex = this.getCountryIndex(this.player1pointCards[i]);
-				let spriteIndex = this.getSpriteIndex(this.player1pointCards[i]);
-				let spr = game.add.sprite(x, y, 'cards' + countryIndex, spriteIndex);
-				spr.anchor.set(0.5, 0.5);
-				this.shownPointCards.push(spr);
-			}
-			//other player's cards (back side)
-			for(let i = 0; i < this.player2pointCards.length; i++){
-				this.shownPointCards.push(game.add.sprite(i * cardWidth, cardHeight, "card-back"));
-			}
-		}else{
-			//your cards
-			for(let i = 0; i < this.player2pointCards.length; i++){
-				//y: game.world.centerY -100, x: game.world.centerX - i * cardWidth
-				let x = game.world.centerX - i * cardWidth;
-				let y = game.world.centerY -100;
-				let countryIndex = this.getCountryIndex(this.player2pointCards[i]);
-				let spriteIndex = this.getSpriteIndex(this.player2pointCards[i]);
-				let spr = game.add.sprite(x, y, 'cards' + countryIndex, spriteIndex);
-				spr.anchor.set(0.5, 0.5);
-				this.shownPointCards.push(spr);
-			}
-			//other player's cards (back side)
-			for(let i = 0; i < this.player1pointCards.length; i++){
-				let spr = game.add.sprite(i * cardWidth, cardHeight/2, "card-back");
-				spr.anchor.set(0.5, 0.5);
-				this.shownPointCards.push(spr);
-			}
-		}
-	},
-	endTurn: function() {
-		// ends the player turn, 
-		// first checks if there are actions left, 
-		// switches between player turns and resets the playerActions to 2 actions.
+		return cards;
+    },
+    showCardSprite: function(card, x, y){
+        let countryIndex = this.getCountryIndex(card);
+        let spriteIndex = this.getSpriteIndex(card);
+        let spr = game.add.sprite(x, y, 'cards' + countryIndex, spriteIndex);
+        spr.anchor.set(0.5, 0.5);
+        return spr;
+    },
+    showCardSprite: function(card, x, y, width, height){
+        let countryIndex = this.getCountryIndex(card);
+        let spriteIndex = this.getSpriteIndex(card);
+        let spr = game.add.sprite(x, y, 'cards' + countryIndex, spriteIndex);
+        spr.anchor.set(0.5, 0.5);
+        spr.width = width;
+        spr.height = height;
+        return spr;
+    },
+    highlightHandCard: function(card){
+        for(let i = 0; i < playState.shownHandCards.length; i++){
+            if(playState.shownHandCards[i] !== undefined){
+                if(playState.shownHandCards[i] !== card){
+                    playState.shownHandCards[i].tint = 0xaaaaaa;
+                }
+            }
+        }
+    },
+    untintHand:function(){
+        for(let i = 0; i < playState.shownHandCards.length; i++){       
+            if(playState.shownHandCards[i] !== undefined){
+                playState.shownHandCards[i].tint = 0xffffff;
+                game.world.bringToTop(playState.shownHandCards[i]);
+            }
+        }
+    },
+    addInteractions: function(cardSpr){
+        //CARD INPUTS
+        cardSpr.inputEnabled = true;
+        cardSpr.events.onInputDown.add(function (target, pointer) {
+            if(playState.blockInput){
+                return;
+            }
+            //todo Check Action count
+            if(pointer.leftButton.isDown){
+                let card;
+                if(playState.playerTurn){
+                    card = playState.p1hand[playState.shownHandCards.indexOf(target)];
+                    playState.p1hand.splice(playState.p1hand.indexOf(card), 1);
+                }else{
+                    card = playState.p2hand[playState.shownHandCards.indexOf(target)];
+                    playState.p2hand.splice(playState.p2hand.indexOf(card), 1);
+                }
+                
+                playState.playAction(card);
+                
+                //Save replay
+                playState.replaySequence.push(1); //0=draw, 1=action, 2=point
+                playState.rsAction.push(cardSpr.key);
 
-		if(( this.player1Turn && (this.playerActions != 0 && this.player1hand.length < maxHandSize)) 
-		|| (!this.player1Turn && (this.playerActions != 0 && this.player2hand.length < maxHandSize)) ) {
-			alert('you still have moves left!1!!11!');
-			return;
-		} else if (this.player1Turn) {
-			this.player1Turn = false;
-			this.playerActions = 2;
-			alert('player 1 turn ended \nplayer 2 turn starts');
-		} else {
-			this.player1Turn = true;
-			this.playerActions = 2;
-			alert('player 2 turn ended \nplayer 1 turn starts');
-		}
+                playState.shownHandCards.splice(playState.shownHandCards.indexOf(target), 1);
+                let actionX = game.world.centerX;
+                let actionY = game.world.centerY;
+                game.add.tween(cardSpr).to({x: actionX, y: actionY}, 500, null, true, 0) //to middle
+                .onUpdateCallback(function(){
+                    playState.blockInput = true;
+                }, this)
+                .onComplete.add(function(){
+                    game.time.events.add(500, function() { //dramatic 'play' effect
+                        let backcard = cardFunctions.flipCard(cardSpr);
+                        let backX = 160;
+                        game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)  //to discard pile
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            if(playState.discardPileSpr == undefined){
+                                playState.discardPileSpr = game.add.sprite(160, game.world.centerY, 'card-back');
+                                playState.discardPileSpr.anchor.set(0.5, 0.5);
+                                playState.discardPileSpr.width = cardWidth;
+                                playState.discardPileSpr.height = cardHeight;
+                            }
+                            backcard.destroy();
+                            playState.blockInput = false;
+                        }, this);
+                    });
+                }, this);
+                
+                game.add.tween(cardSpr.scale).to({x: 1.9, y: 1.9}, 500, null, true, 0); //scaling
+                playState.updateHandCards();
+                cardFunctions.untintHand();
+            }
+            else if(pointer.rightButton.isDown){
+                let card;
+                if(playState.playerTurn){
+                    card = playState.p1hand[playState.shownHandCards.indexOf(target)];
+                    playState.p1hand.splice(playState.p1hand.indexOf(card), 1);
+                    playState.p1pointCards.push(card);
+                }else{
+                    card = playState.p2hand[playState.shownHandCards.indexOf(target)];
+                    playState.p2hand.splice(playState.p2hand.indexOf(card), 1);
+                    playState.p2pointCards.push(card);
+                }
 
-//		console.clear();
-		if(this.player1Turn){
-			console.log('Player 1');
-		}else{
-			console.log('Player 2');
-		}
-		this.showHand();
-		this.showPointCards();
-	},
-	restartGame: function() {
-		game.state.start('menu');
-	},
+                playState.playPoints(card);
+                
+                //Save replay
+                playState.replaySequence.push(2); //0=draw, 1=action, 2=point
+                playState.rsPoints += 1;
 
-	//Playing cards
-	// card is card number from current players hand
-	playCardPoints: function(card){
-		if(this.playerActions == 0){
-			alert('No more moves left, please end your turn');
-			return;
-		}
-		this.playerActions -= 1;
+                playState.shownHandCards.splice(playState.shownHandCards.indexOf(target), 1);
+                let pointsX = game.world.centerX;
+                let pointsY = game.world.centerY;
+                game.add.tween(cardSpr).to({x: pointsX, y: pointsY}, 500, null, true, 0) //to middle
+                .onUpdateCallback(function(){
+                    //Keep resetting the animationActive bool
+                    playState.blockInput = true;
+                }, this)
+                .onComplete.add(function(){
+                    game.time.events.add(500, function() { //dramatic 'play' effect
+                        let backcard = cardFunctions.flipCard(cardSpr);
+                        let backX;
+                        if(playState.playerTurn){
+                            backX = 460 + (cardWidth/2) * (playState.p1pointCards.length-1);
+                        }else{
+                            backX = 460 + (cardWidth/2) * (playState.p2pointCards.length-1);
+                        }
 
-		if(this.player1Turn){
-			var index = this.player1hand.indexOf(card);
-			this.player1hand.splice(index, 1);
-		} else {
-			var index = this.player2hand.indexOf(card);
-			this.player2hand.splice(index, 1);
-		}
-		var scoreText;
-		var cardData = this.deck[card];
-		if(this.player1Turn){
- 			this.player1score = this.player1score + Number(cardData.points);
- 			this.player1pointCards.push(cardData.points);
-		} else {
- 			this.player2score = this.player2score + Number(cardData.points);
-			this.player2pointCards.push(cardData.points);
-		}
-	},
-//	totalScore: function(player) {
-//		if(player) {
-//			console.log(this.player1score);
-//			pointsText = game.add.text(200, 220, this.player1score, { fill: '#cccccc'});			
-// 		} else {
-//			console.log(this.player2score);
-//			pointsText = game.add.text(200, 220, this.player2score, { fill: '#cccccc'});
-//		}
-//},
-	playCardAction: function(card){
-		if(this.playerActions == 0){
-			alert('No more moves left, please end your turn');
-			return;
-		}
-		this.playerActions -= 1;
+                        game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0) //to pointarea
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            playState.blockInput = false;
+                        }, this);
+                        playState.playedPointSprites.push(backcard);
+                        playState.blockInput = false;
+                    });
+                }, this);
+                game.add.tween(cardSpr.scale).to({x: 1.9, y: 1.9}, 500, null, true, 0);
+                playState.updateHandCards();
+                cardFunctions.untintHand();
+            }
+        });
+        cardSpr.events.onInputOver.add(function (target) {
+            if(playState.blockInput){
+                return;
+            }
+            game.world.bringToTop(target);
+            target.scale.set(1.5);
+            cardFunctions.highlightHandCard(target);
+        }, this);
+        cardSpr.events.onInputOut.add(function (target) {
+            if(playState.blockInput){
+                return;
+            }
+            cardFunctions.untintHand();
+            target.width = cardWidth;
+            target.height = cardHeight;
+        }, this);
+    },
+    flipCard: function(card){
+        let backcard = game.add.sprite(card.x, card.y, 'card-back');
+        backcard.anchor.set(0.5, 0.5);
+        backcard.width = card.width;
+        backcard.height = card.height;
+        card.destroy();
+        return backcard;
+    },
 
-		///It would be cool to use like 'eval(githubrepo/cardAction.js)' in the end. #Moddability :P
-		if(this.player1Turn){
-			var index = this.player1hand.indexOf(card);
-			this.player1hand.splice(index, 1);
-		} else {
-			var index = this.player2hand.indexOf(card);
-			this.player2hand.splice(index, 1);
-		}
-		var cardData = this.deck[card];
-		console.log('Played a ' + cardData.description + ' action card!');
-		
-		switch(cardData.action) {
-			case 0:
-				//Homecoming
-				cardActions.homecoming(cardData);
-				break;
-			case 1:
-				//Destroy one point card
-				cardActions.destroyPointCard(cardData);
-				break;
-			case 2:
-				//Protect one point card
-				cardActions.protectPointCard(cardData);
-				break;
-			case 3:
-				//Opponent skips a turn
-				cardActions.skipTurn(cardData);
-				break;
-			case 4:
-				//Steal a hand card
-				cardActions.stealHandCard(cardData);
-				break;
-			case 5:
-				//Draw two cards
-				cardActions.drawTwoCards(cardData);
-				break;
-			case 6:
-				//
-				break;
-			case 7:
-				//
-				break;
-			default:
-				//blank
-		}
-	},
-
-	//Game Functions
-	// player = true -> p1
-	// player = false -> p2
-	dealCard: function(player) {
-		var card = this.drawPile[0];
-		this.drawPile.splice(0, 1);
-		//console.log('card: ' + card + ' = ' + this.deck.indexOf(card_) + '\ndrawPile - deck');
-
-		if(player){
-			this.player1hand.push(card);
-			//console.log('player hand size: ' + this.player1hand.length);
-		}
-		else{
-			this.player2hand.push(card);
-			//console.log('player hand size: ' + this.player2hand.length);
-		}
-	},
-
-	// player = true -> p1
-	// player = false -> p2
-	removeCardRandom: function(player){
-		if(player){
-			var card = this.game.rnd.integerInRange(0, this.player1hand.length - 1);
-			var card_ = this.player1hand[card];
-			this.player1hand.splice(card, 1);
-			this.discardPile.push(card_);
-		}
-		else{
-			var card = this.game.rnd.integerInRange(0, this.player2hand.length - 1);
-			var card_ = this.player2hand[card];
-			this.player2hand.splice(card, 1);
-			this.discardPile.push(card_);
-		}
-	},
-	// card is the card number from hand
-	removeCard: function(player, card){
-		if(player){
-			var card_ = this.player1hand[card];
-			this.player1hand.splice(card, 1);
-			this.discardPile.push(card_);
-		}
-		else{
-			var card_ = this.player2hand[card];
-			this.player2hand.splice(card, 1);
-			this.discardPile.push(card_);
-		}
-	},
-
-	//Helper functions
+    //Helper functions
 	getCountryIndex: function(number) {
 		var x = number;
 		var count = -1;
@@ -431,19 +534,6 @@ var playState = {
 			x -= deckLength;
 		}
 		return Number(x);
-	},
-	shuffleDeck: function(array){
-		var currentIndex = array.length, temporaryValue, randomIndex;
-		// While there remain elements to shuffle...
-		while (0 !== currentIndex) {
-			// Pick a remaining element...
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex -= 1;
-			// And swap it with the current element.
-			temporaryValue = array[currentIndex];
-			array[currentIndex] = array[randomIndex];
-			array[randomIndex] = temporaryValue;
-		}
-		return array;
 	}
+
 }

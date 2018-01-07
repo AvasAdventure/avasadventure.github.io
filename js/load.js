@@ -1,7 +1,7 @@
 var loadState = {
 	preload: function() {
 		//Load general assets here.
-		game.load.crossOrigins = 'anonymous';
+		game.load.crossOrigin = 'anonymous';
 		game.load.image('background', 'assets/background.png');
 		game.load.image('ava_v2', 'assets/ava_v2.png');
 		game.load.spritesheet('ava_shrug', 'assets/ava_shrug.png', 320, 413, 3);
@@ -16,19 +16,18 @@ var loadState = {
 		game.load.image('wieken', 'assets/wieken.png');
 		game.load.image('points-area', 'assets/pointsArea.png');
 		game.load.image('menu-container', 'assets/menu-container.png');
+
+
 		game.load.image('card-back', 'assets/card-back.png');
 		game.load.image('game-board', 'assets/game-board.png');
+		game.load.image('black', 'assets/black.png');
+		game.load.image('next-button', 'assets/next-button.png');
+
 		//Load the card deck list
-		try {
-			game.load.json('card-decks', deckStorageLink + "countries.json");
-		} catch (e) {
-			console.log('no wifi');
-		}
+		game.load.json('card-decks', deckStorageLink + "countries.json");
 		
 	},
 	create: function() {
 		game.state.start('secondLoad');
-		console.log('loadState did load');
-		console.log(game.cache.getJSON('card-decks'));
 	}
 }

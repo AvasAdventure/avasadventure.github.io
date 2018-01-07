@@ -3,19 +3,19 @@ var cardActions = {
 	homecoming: function(cardData){
         console.log('homecoming');
 	},
-	destroyPointCard: function(cardData){
+	destroyPointCard: function(cardData, repeatAmount){
 		
 	},
-	protectPointCard: function(cardData){
+	protectPointCard: function(cardData, repeatAmount){
 
 	},
-	skipTurn: function(cardData){
+	skipTurn: function(cardData, repeatAmount){
 
 	},
-	stealHandCard: function(cardData){
+	stealHandCard: function(cardData, repeatAmount){
 
 	},
-	drawTwoCards: function(cardData){
+	drawTwoCards: function(cardData, repeatAmount){
 
 	}
 }
