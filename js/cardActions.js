@@ -16,6 +16,7 @@ var cardActions = {
 
 	},
 	drawTwoCards: function(cardData, repeatAmount){
-
+		console.log('beep');
+		playState.dealCard(playState.playState, 2);
 	}
 }
