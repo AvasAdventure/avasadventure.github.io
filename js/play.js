@@ -11,7 +11,7 @@ var playState = {
         //Load cards
         var jsons = [];
 		for(let i = 0; i < deckAmount; i++){
-			let deck = game.cache.getJSON('cards' + i);
+            let deck = game.cache.getJSON('cards' + i);
 			jsons = jsons.concat(deck);
         }
         this.deck = jsons;
@@ -163,10 +163,10 @@ var playState = {
             cardSpr.moveDown(); //move under the fader
         }
         for(let i = 0; i < otherPointCards; i++){
-            let cardSpr = game.add.sprite(535 + ((207/2) * i), 186, 'card-back');
+            let cardSpr = game.add.sprite(535 + ((cardWidthSmall/2) * i), 186, 'card-back');
             cardSpr.anchor.set(0.5, 0.5);
-            cardSpr.width = 207;
-            cardSpr.height = 288;
+            cardSpr.width = cardWidthSmall;
+            cardSpr.height = cardHeightSmall;
             playState.playedPointSprites.push(cardSpr);
             cardSpr.moveDown(); //move under the fader
         }
@@ -176,7 +176,7 @@ var playState = {
             let card = playState.shownHandCards[i];
             let newX = (385 + (cardWidth/2) * i);
             let newY = 900;
-            game.add.tween(card).to({x: newX, y: newY}, 500, null, true, 0)
+            game.add.tween(card).to({x: newX, y: newY, width: cardWidth, height: cardHeight}, 500, null, true, 0)
             .onUpdateCallback(function(){
                 playState.blockInput = true;
             }, this)
@@ -187,11 +187,11 @@ var playState = {
     },
     playPoints: function(card){
         //Check Actions
-        //card = json data
+        //card = nr
     },
     playAction: function(card){
         //Check Actions
-        //card = json data
+        //card = nr
         let cardData = playState.deck[card];
         console.log(cardData.action + '_' + cardData.description);
         switch(Number(cardData.action)) {
@@ -313,7 +313,7 @@ var playState = {
                         playState.replayCards.push(spr);
                         var newX = game.world.centerX;
                         var newY = 0 - cardHeight;
-                        var tween = game.add.tween(spr).to({x: newX, y: newY, width: 207, height: 288}, 500, null, true, 0)
+                        var tween = game.add.tween(spr).to({x: newX, y: newY, width: cardWidthSmall, height: cardHeightSmall}, 500, null, true, 0)
                         .onUpdateCallback(function(){
                             playState.blockInput = true;
                         }, this)
@@ -323,8 +323,8 @@ var playState = {
                         break;
                     case 1: //action
                         var cardSpr = game.add.sprite(game.world.centerX, 0 - cardHeight, rsAction[actionAmount]);
-                        cardSpr.width = 207;
-                        cardSpr.height = 288;
+                        cardSpr.width = cardWidthSmall;
+                        cardSpr.height = cardHeightSmall;
                         cardSpr.anchor.set(0.5, 0.5);
                         playState.replayCards.push(cardSpr);
                         var actionX = game.world.centerX;
@@ -354,7 +354,7 @@ var playState = {
                             });
                         }, this);
                         
-                        game.add.tween(cardSpr.scale).to({x: 1.9, y: 1.9}, 500, null, true, 0); //scaling
+                        game.add.tween(cardSpr).to({width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0); //scaling
                         actionAmount += 1;
                         break;
                     case 2: //point
@@ -363,9 +363,9 @@ var playState = {
                         spr.height = cardHeight;
                         spr.anchor.set(0.5, 0.5);
                         playState.replayCards.push(spr);
-                        var newXx = 535 + ((207/2) * pointAmount);
+                        var newXx = 535 + ((cardWidthSmall/2) * pointAmount);
                         var newYy = 186;
-                        var tween = game.add.tween(spr).to({x: newXx, y: newYy, width: 207, height: 288}, 500, null, true, 0)
+                        var tween = game.add.tween(spr).to({x: newXx, y: newYy, width: cardWidthSmall, height: cardHeightSmall}, 500, null, true, 0)
                         .onUpdateCallback(function(){
                             playState.blockInput = true;
                         }, this)
@@ -477,7 +477,7 @@ var cardFunctions = {
                     });
                 }, this);
                 
-                game.add.tween(cardSpr.scale).to({x: 1.9, y: 1.9}, 500, null, true, 0); //scaling
+                game.add.tween(cardSpr).to({width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0); //scaling
                 playState.updateHandCards();
                 cardFunctions.untintHand();
             }
@@ -528,7 +528,7 @@ var cardFunctions = {
                         playState.blockInput = false;
                     });
                 }, this);
-                game.add.tween(cardSpr.scale).to({x: 1.9, y: 1.9}, 500, null, true, 0);
+                game.add.tween(cardSpr).to({width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0);
                 playState.updateHandCards();
                 cardFunctions.untintHand();
             }
@@ -538,7 +538,7 @@ var cardFunctions = {
                 return;
             }
             game.world.bringToTop(target);
-            target.scale.set(1.5);
+            game.add.tween(target).to({width: cardWidthBig, height: cardHeightBig}, 100, null, true, 0);
             cardFunctions.highlightHandCard(target);
         }, this);
         cardSpr.events.onInputOut.add(function (target) {

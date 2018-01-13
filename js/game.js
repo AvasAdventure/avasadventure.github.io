@@ -3,10 +3,14 @@ var deckStorageLink = "https://raw.githubusercontent.com/AvasAdventure/Card-Deck
 var deckLength = 10; //should be 10 later
 var maxPlayerActions = 2;
 var maxHandSize = 10; //to turn off set to high nr.
-var cardSprWidth = 181;
-var cardSprHeight = 252;
+var cardSprWidth = 755;
+var cardSprHeight = 1054;
 var cardWidth = 230;
 var cardHeight = 320;
+var cardWidthSmall = 207;
+var cardHeightSmall = 288;
+var cardWidthBig = 294;
+var cardHeightBig = 384;
 
 //Start Phaser
 var game = new Phaser.Game(1920, 1079, Phaser.CANVAS, '');

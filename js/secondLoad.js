@@ -11,7 +11,7 @@ var secondLoadState = {
 		for(let i = 0; i < decksData.length; i++){
 			//for example: https://raw.githubusercontent.com/AvasAdventure/Card-Decks/master/netherlands_cards.png
 			game.load.json('cards' + i, deckStorageLink + decksData[i][0]);
-			game.load.spritesheet('cards' + i, deckStorageLink + decksData[i][1], cardSprWidth, cardSprHeight, 11);
+			game.load.spritesheet('cards' + i, deckStorageLink + decksData[i][1], cardSprWidth, cardSprHeight, 10);
 			deckAmount += 1;
 		}
 	},
