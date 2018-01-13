@@ -20,7 +20,6 @@ var playState = {
         var endTurnButton = game.add.button(0, 0, 'endturn-button', function(){
             if(playState.blockInput){return;}
             playState.endTurn();
-            playState.blockInput = true;
         });
         endTurnButton.scale.set(.5,.5);
 
@@ -72,22 +71,19 @@ var playState = {
         
     },
     update: function() {
-        if(game.time.events.duration == 0){
-            playState.blockInput = false;
-        }else{
-            playState.blockInput = true;
-        }
+
     },
     render: function() {
-
-        game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+        game.debug.text('block input: ' + playState.blockInput, 32, 32);
+        //game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     
     },
 
     dealCard: function(player, amount) {
-        console.log('deal');
+        console.log(player + '-' + playState.playerTurn);
         for(let i = 0; i < amount; i++){
             if(player == playState.playerTurn){ //should i render it?
+                console.log('render');
                 game.time.events.add(500 * i, function() { //wait a bit before dealing next card
                     let card = playState.drawPile[0];
                     playState.drawPile.splice(0, 1);     
@@ -193,32 +189,31 @@ var playState = {
         //Check Actions
         //card = nr
         let cardData = playState.deck[card];
-        console.log(cardData.action + '_' + cardData.description);
+        console.log(cardData.description);
         switch(Number(cardData.action)) {
 			case 0:
 				//Homecoming
-				cardActions.homecoming(cardData);
+				cardActions.homecoming(cardData, 1);
 				break;
 			case 1:
 				//Destroy one point card
-				cardActions.destroyPointCard(cardData);
+				cardActions.destroyPointCard(cardData, 1);
 				break;
 			case 2:
 				//Protect one point card
-				cardActions.protectPointCard(cardData);
+				cardActions.protectPointCard(cardData, 1);
 				break;
 			case 3:
 				//Opponent skips a turn
-				cardActions.skipTurn(cardData);
+				cardActions.skipTurn(cardData, 1);
 				break;
 			case 4:
 				//Steal a hand card
-				cardActions.stealHandCard(cardData);
+				cardActions.stealHandCard(cardData, 1);
 				break;
 			case 5:
                 //Draw two cards
-                console.log(cardActions);
-				cardActions.drawTwoCards(cardData, 1);
+                this.dealCard(this.playerTurn, 2);
 				break;
 			case 6:
 				//
@@ -264,6 +259,7 @@ var playState = {
             }
             playerText.anchor.set(0.5, 0.5);
             playerText.bringToTop();
+            
             //NextButton
             let button = game.add.button(game.world.centerX, game.world.centerY,'next-button', function(){
                 button.destroy();
@@ -277,9 +273,9 @@ var playState = {
             button.anchor.set(0.5, 0.5);
         }, this);
     },
-    fadeScreen: function(out){
+    fadeScreen: function(dir){
         playState.fadeSprite.bringToTop();
-        if(out){
+        if(dir){
             return game.add.tween(playState.fadeSprite).to({alpha: 1}, 500, null, true, 0);
         }else{
             return game.add.tween(playState.fadeSprite).to({alpha: 0}, 500, null, true, 0);
@@ -542,9 +538,6 @@ var cardFunctions = {
             cardFunctions.highlightHandCard(target);
         }, this);
         cardSpr.events.onInputOut.add(function (target) {
-            if(playState.blockInput){
-                return;
-            }
             cardFunctions.untintHand();
             target.width = cardWidth;
             target.height = cardHeight;

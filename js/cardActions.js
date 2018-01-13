@@ -15,8 +15,8 @@ var cardActions = {
 	stealHandCard: function(cardData, repeatAmount){
 
 	},
-	drawTwoCards: function(cardData, repeatAmount){
+	drawTwoCards: function(cardData, repeatAmount, player){
 		console.log('beep');
-		playState.dealCard(playState.playState, 2);
+		playState.dealCard(player, 2);
 	}
 }
