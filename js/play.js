@@ -62,6 +62,8 @@ var playState = {
         }
         this.playerTurn = true;
         this.p1hand = [];
+        this.p1Score = [];
+        this.p2Score = [];
         this.p2hand = [];
         this.p1handSprites = game.add.group();
         this.p2handSprites = game.add.group();
@@ -93,7 +95,8 @@ var playState = {
         //game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
     drawCard: function(player, amount = 1, saveReplay = true){
-        for (let i = 0; i < amount; i++) {
+            let actions = this.checkActions();
+            for (let i = 0; i < amount; i++) {
             //Allowed?
             let handSize;
             if(player){
@@ -105,6 +108,9 @@ var playState = {
                 console.log('not allowed');
                 return;
             }
+            if(!actions){
+                console.log('no more actions left')
+            } else {
 
             //Get a card
             let card = playState.drawPile[0];
@@ -112,6 +118,7 @@ var playState = {
             
             //Animation if it's for the current player
             if(player == playState.playerTurn){
+                this.maxPlayerActions -= 1;
                 game.time.events.add(500 * i, function() { //wait a bit before dealing next card
                     let handSize;
                     let cardSpr;
@@ -141,6 +148,7 @@ var playState = {
                     }
                 });
             }else{
+                this.maxPlayerActions -= 1;
                 //Add to hand
                 let handSize;
                 let cardSprite;
@@ -157,12 +165,17 @@ var playState = {
                 let newY = 900;
                 cardSpr.x = newX;
                 cardSpr.y = newY;
+                }
             }
         }
     },
 
     cardClick: function(sprite, pointer){
-        if(pointer.leftButton.isDown){
+        let actions = this.checkActions();
+        if(!actions) {
+            console.log('no more actions left')
+        } else {
+            if(pointer.leftButton.isDown){
             //Play as action card
             let card = sprite.cardNr;
 
@@ -199,15 +212,14 @@ var playState = {
                     backcard.destroy();
                     playState.allowInput(true);
                 }, this);
+                maxPlayerActions -= 1;
             });
             
-        }else if(pointer.rightButton.isDown){
+            }else if(pointer.rightButton.isDown){
             //Play as action card
             let card = sprite.cardNr;
-
             //Remove from hand
             sprite = playState.animatingSprites.add(sprite);
-            
             //Move to center
             game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
             .onUpdateCallback(function(){
@@ -242,7 +254,9 @@ var playState = {
 
                 //Play action
                 playState.playPoints(sprite.cardNr);
+                maxPlayerActions -= 1;
             });
+            }
         }
     },
     cardHoverOver: function(sprite){
@@ -262,10 +276,21 @@ var playState = {
         }
     },
     playPoints: function(cardNr){
-        //
+        let cardData = playState.deck[cardNr];
+        let cardPoints = Number(cardData.points);
+        let cardCountry = cardData.country;
+        let cardCountryPoints = [cardCountry, cardPoints];
+        if(playState.playerTurn) {  
+            this.p1pointCards.push(cardCountryPoints);
+//            this.p1Score.reduce((a,b,)=>a+b, 0);
+        } else {
+            this.p2pointCards.push(cardCountryPoints);
+//            this.p2Score.reduce((a,b)=>a+b, 0);
+        }
     },
     playAction: function(cardNr){
         let cardData = playState.deck[cardNr];
+        console.log(cardData);
         switch (Number(cardData.action)) {
             case 0:
                 //Homecoming
@@ -314,8 +339,8 @@ var playState = {
         }
         
     },
-
     endTurn: function(){
+        maxPlayerActions = 2;
         if(!playState.isInputEnabled()){return;}
         playState.allowInput(false);
 
@@ -362,7 +387,16 @@ var playState = {
         }else{
             return game.add.tween(playState.fadeSprite).to({alpha: 0}, 500, null, true, 0);
         }
-    }
+    },
+    checkActions: function(){
+        if (maxPlayerActions != 0) {
+            console.log('actions left: ' + maxPlayerActions);
+            return true;
+        } else {
+            return false;
+        }
+    },
+
 }
 
 var cardFunctions = {
