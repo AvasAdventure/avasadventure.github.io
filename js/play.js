@@ -303,7 +303,7 @@ var playState = {
         }
         for (var j = 0; j < this.p2pointCards.length;j++) {
         // counts all the english cards, country '2'
-            if (this.p2pointCards[i][0] == "2") {
+            if (this.p2pointCards[j][0] == "2") {
                 this.p2Score.push(this.p2pointCards[j][1]);
                 console.log(this.p2pointCards[j][1]);
             } else {
