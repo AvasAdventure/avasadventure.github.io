@@ -63,11 +63,17 @@ var playState = {
         this.playerTurn = true;
         this.p1hand = [];
         this.p1Score = [];
+        this.p1ScoreSum = [];
+        this.p1Homecomingcards = [];
         this.p2Score = [];
+        this.p2ScoreSum = [];
         this.p2hand = [];
         this.p1handSprites = game.add.group();
         this.p2handSprites = game.add.group();
         this.animatingSprites = game.add.group();
+
+        this.endGame = false;
+        this.countDown = 5;
     },
     create: function() {
         playState.p1handSprites.visible = playState.playerTurn;
@@ -96,6 +102,7 @@ var playState = {
     },
     drawCard: function(player, amount = 1, saveReplay = true){
             let actions = this.checkActions();
+            if(!actions) {'no more actions left'}
             for (let i = 0; i < amount; i++) {
             //Allowed?
             let handSize;
@@ -107,67 +114,62 @@ var playState = {
             if(handSize >= maxHandSize){
                 console.log('not allowed');
                 return;
-            }
-            if(!actions){
-                console.log('no more actions left')
             } else {
 
             //Get a card
-            let card = playState.drawPile[0];
-            playState.drawPile.splice(0, 1);
-            
+                let card = playState.drawPile[0];
+                playState.drawPile.splice(0, 1);
             //Animation if it's for the current player
-            if(player == playState.playerTurn){
-                this.maxPlayerActions -= 1;
-                game.time.events.add(500 * i, function() { //wait a bit before dealing next card
-                    let handSize;
-                    let cardSpr;
+                if(player == playState.playerTurn){
+
+                    game.time.events.add(500 * i, function() { //wait a bit before dealing next card
+                        let handSize;
+                        let cardSpr;
                     //get hand size and add to hand
-                    if(playState.playerTurn){
+                        if(playState.playerTurn){
+                            handSize = playState.p1handSprites.length;
+                            cardSpr = playState.p1handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
+                        }else{
+
+                            handSize = playState.p2handSprites.length;
+                            cardSpr = playState.p2handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
+                        }
+
+
+                    //Move to the hand
+                        let newX = (385 + (cardWidth/1.5) * handSize);
+                        let newY = 900;
+                        game.add.tween(cardSpr).to({x: newX, y: newY}, 500, null, true, 0)
+                        .onUpdateCallback(function(){
+                            playState.allowInput(false);
+                        })
+                        .onComplete.add(function(){
+                            playState.allowInput(true);
+                        });
+                    //Save replay
+                        if(saveReplay){
+                            playState.replaySequence.push(0);
+                        }
+                    });
+                }else{
+                //Add to hand
+                    let handSize;
+                    let cardSprite;
+                    if(player){
                         handSize = playState.p1handSprites.length;
                         cardSpr = playState.p1handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
                     }else{
                         handSize = playState.p2handSprites.length;
                         cardSpr = playState.p2handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
                     }
-
-                    //Move to the hand
+                //Move to the hand
                     let newX = (385 + (cardWidth/1.5) * handSize);
                     let newY = 900;
-                    game.add.tween(cardSpr).to({x: newX, y: newY}, 500, null, true, 0)
-                    .onUpdateCallback(function(){
-                        playState.allowInput(false);
-                    })
-                    .onComplete.add(function(){
-                        playState.allowInput(true);
-                    });
-
-                    //Save replay
-                    if(saveReplay){
-                        playState.replaySequence.push(0);
+                    cardSpr.x = newX;
+                    cardSpr.y = newY;
                     }
-                });
-            }else{
-                this.maxPlayerActions -= 1;
-                //Add to hand
-                let handSize;
-                let cardSprite;
-                if(player){
-                    handSize = playState.p1handSprites.length;
-                    cardSpr = playState.p1handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
-                }else{
-                    handSize = playState.p2handSprites.length;
-                    cardSpr = playState.p2handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
                 }
-
-                //Move to the hand
-                let newX = (385 + (cardWidth/1.5) * handSize);
-                let newY = 900;
-                cardSpr.x = newX;
-                cardSpr.y = newY;
-                }
-            }
-        }
+            } 
     },
 
     cardClick: function(sprite, pointer){
@@ -288,12 +290,84 @@ var playState = {
 //            this.p2Score.reduce((a,b)=>a+b, 0);
         }
     },
+    getScore: function() { 
+        for (var i = 0; i < this.p1pointCards.length;i++) {
+        // counts all the english cards, country '2'
+            if (this.p1pointCards[i][0] == "2") {
+                this.p1Score.push(this.p1pointCards[i][1]);
+                console.log(this.p1pointCards[i][1]);
+            } else {
+                console.log('not english')
+                return; 
+            }
+        }
+        for (var j = 0; j < this.p2pointCards.length;j++) {
+        // counts all the english cards, country '2'
+            if (this.p2pointCards[i][0] == "2") {
+                this.p2Score.push(this.p2pointCards[j][1]);
+                console.log(this.p2pointCards[j][1]);
+            } else {
+                console.log('not english')
+                return; 
+            }
+        }
+        console.log(this.p1pointCards);
+        console.log(this.p1Score);
+        console.log(this.p2pointCards);
+        console.log(this.p2Score);
+    },
+    calcWinner: function(p1Score, p2Score) {
+        // sum of scores
+        this.p1ScoreSum = this.p1Score.reduce((a,b)=>a+b, 0);
+        console.log('player 1 score: ' + this.p1ScoreSum);
+        this.p2ScoreSum = this.p2Score.reduce((a,b)=>a+b, 0);
+        console.log('player 2 score: ' + this.p2ScoreSum);
+        let winText;
+            if (this.p1ScoreSum > this.p2ScoreSum ) {
+                let alphaTween = playState.fadeScreen(true);
+                winText = game.add.text(game.world.centerX, game.world.centerY - 200, 'Player 1 Won!', {fill: '#ffffff', fontSize: 72});
+                winText.anchor.set(0.5,0.5);
+                let button = game.add.button(game.world.centerX, game.world.centerY,'restart-button', function(){
+                    game.state.start('menu');
+                    alphaTween = playState.fadeScreen(false);
+                    alphaTween.onComplete.add(function() {
+                    playState.allowInput(true);
+                    }, this);
+                button.anchor.set(0.5, 0.5);
+                });
+                button.anchor.set(0.5, 0.5);        
+            } else if (this.p1ScoreSum < this.p2ScoreSum) {
+                let alphaTween = playState.fadeScreen(true);
+                winText = game.add.text(game.world.centerX, game.world.centerY - 200, 'Player 2 Won!', {fill: '#ffffff', fontSize: 72});
+                winText.anchor.set(0.5,0.5);
+                let button = game.add.button(game.world.centerX, game.world.centerY,'restart-button', function(){
+                    game.state.start('menu');
+                    alphaTween = playState.fadeScreen(false);
+                    alphaTween.onComplete.add(function() {
+                    playState.allowInput(true);
+                    }, this);
+                });
+                button.anchor.set(0.5, 0.5);
+            } else {
+                let alphaTween = playState.fadeScreen(true);
+                winText = game.add.text(game.world.centerX, game.world.centerY - 200, 'DRAW!', {fill: '#ffffff', fontSize: 72});
+                winText.anchor.set(0.5,0.5);
+                let button = game.add.button(game.world.centerX, game.world.centerY,'restart-button', function(){
+                    game.state.start('menu');
+                    alphaTween = playState.fadeScreen(false);
+                    alphaTween.onComplete.add(function() {
+                    playState.allowInput(true);
+                    }, this);
+                button.anchor.set(0.5, 0.5);
+            });
+        }
+    },
     playAction: function(cardNr){
         let cardData = playState.deck[cardNr];
         console.log(cardData);
         switch (Number(cardData.action)) {
             case 0:
-                //Homecoming
+                this.homeComing();
                 break;
             case 1:
                 //Destoy point card
@@ -311,6 +385,14 @@ var playState = {
                 //Draw two cards
                 playState.drawCard(playState.playerTurn, 2);
                 break;
+        }
+    },
+    homeComing: function() {
+        if (!this.endGame) {
+            this.endGame = true;
+            console.log('set coundDown to ' + this.endGame); 
+            window.alert('HOME COMING HAS BEEN PLAYED, TURNS REMAINING: ' + this.countDown);
+        } else {
         }
     },
     allowInput: function(state){
@@ -340,23 +422,29 @@ var playState = {
         
     },
     endTurn: function(){
-        maxPlayerActions = 2;
-        if(!playState.isInputEnabled()){return;}
-        playState.allowInput(false);
-
-        let alphaTween = playState.fadeScreen(true);
-        alphaTween.onComplete.add(function(){
+        console.log('player1: '+ this.p1Score);
+        console.log('player2: '+ this.p2Score);
+        if(this.endGame) {this.countDown -= 1;}
+        console.log('turns left: ' +this.countDown);
+        if(this.countDown <= 0) {
+           var scores = this.getScore();
+           console.log(scores);
+           this.calcWinner();
+        } else {
+            maxPlayerActions = 2;
+            if(!playState.isInputEnabled()){return;}
+                playState.allowInput(false);
+            let alphaTween = playState.fadeScreen(true);
+            alphaTween.onComplete.add(function(){
             //switch turns
-            playState.playerTurn = !playState.playerTurn;
-
+                playState.playerTurn = !playState.playerTurn;
             //hide all cards
-            playState.p1handSprites.visible = playState.playerTurn;
-            playState.p1pointSprites.visible = playState.playerTurn;
-            playState.p2handSprites.visible = !playState.playerTurn;
-            playState.p2pointSprites.visible = !playState.playerTurn;
+                playState.p1handSprites.visible = playState.playerTurn;
+                playState.p1pointSprites.visible = playState.playerTurn;
+                playState.p2handSprites.visible = !playState.playerTurn;
+                playState.p2pointSprites.visible = !playState.playerTurn;
 
-            playState.animatingSprites.removeAll(true);
-
+                playState.animatingSprites.removeAll(true);
             //Add text
             let playerText;
             if(!playState.playerTurn){
@@ -364,7 +452,7 @@ var playState = {
             }else{
                 playerText = game.add.text(game.world.centerX, game.world.centerY - 200, 'Player 1', {fill: '#ffffff', fontSize: 72});
             }
-            playerText.anchor.set(0.5, 0.5);
+                playerText.anchor.set(0.5, 0.5);
 
             //NextButton
             let button = game.add.button(game.world.centerX, game.world.centerY,'next-button', function(){
@@ -378,7 +466,7 @@ var playState = {
             });
             button.anchor.set(0.5, 0.5);
         });
-
+        }    
     },
     fadeScreen: function(dir){
         playState.fadeSprite.bringToTop();
