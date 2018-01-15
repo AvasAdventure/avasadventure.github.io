@@ -407,10 +407,10 @@ var playState = {
         }
     },
     protectCard: function() {
-        if(this.playerTurn && (this.p1pointCards.length >= this.p1Protect)) {
+        if(this.playerTurn && (this.p1pointCards.length > this.p1Protect)) {
             this.p1Protect += 1;
             console.log('Amount of pointcard protected: ' + this.p1Protect);
-        } else if(!this.playerTurn && (this.p2pointCards.length >= this.p2Protect)){
+        } else if(!this.playerTurn && (this.p2pointCards.length > this.p2Protect)){
             this.p2Protect += 1;
             console.log('Amount of pointcard protected: ' + this.p2Protect);
         } else {
@@ -488,9 +488,10 @@ var playState = {
         
     },
     endTurn: function(){
-        console.log(this.p1hand, this.p2hand);
-        if(this.endGame) {this.countDown -= 1;}
-        console.log('turns left: ' +this.countDown);
+        if(this.endGame) {
+            this.countDown -= 1;
+            console.log('turns left: ' +this.countDown);
+        }
         if(this.countDown <= 0) {
            var scores = this.getScore();
            console.log(scores);
