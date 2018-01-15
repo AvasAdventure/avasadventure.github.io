@@ -387,7 +387,7 @@ var playState = {
                 this.skipTurn();
                 break;
             case 4:
-                //Steal card
+                this.stealCard();
                 break;
             case 5:
                 //Draw two cards
@@ -415,21 +415,29 @@ var playState = {
             console.log('something went wrong');
         }
     },
-    destroyPointCard: function(p1Protect, p2Protect) {
+    destroyPointCard: function(p1Protect, p2Protect, card) {
         if (this.playerTurn && this.p2pointCards != 0 && this.p2Protect == 0) {
-            let destroyIndex = this.p2pointCards[Math.floor(Math.random() * (this.p2pointCards.length - this.p2Protect))];
-            console.log('card to destroy: ' + destroyIndex);
-            this.p2pointCards.splice(destroyIndex, 1);
+            let destroyIndex = Math.floor(Math.random() * (this.p2pointCards.length - this.p2Protect));
+            let destroyData = this.p2pointCards[destroyIndex];
+            this.p2pointCards.splice(destroyData, 1);
+            console.log(this.p2pointSprites);
+            console.log(destroyIndex);
+            console.log(this.p2pointSprites.children);
+            this.p2pointSprites.removeChildAt(destroyIndex[1]);
         } else if (this.playerTurn && this.p2Protect != 0) {
 // decrease p2protect by 1, it has protected one card
             console.log('player 2 protected one card!')
             this.p2Protect -= 1;
-        } else if (!this.playerTurn && this.p1pointCards != 0) {
-            let destroyIndex = this.p1pointCards[Math.floor(Math.random() * this.p1pointCards.length - this.p1Protect)];
-            console.log('card to destroy: ' + destroyIndex);
-            this.p1pointCards.splice(destroyIndex, 1);
-            console.log('after: ' + this.p1pointCards)
+        } else if (!this.playerTurn && this.p1pointCards != 0 && this.p1Protect == 0) {
+            let destroyIndex = Math.floor(Math.random() * (this.p1pointCards.length - this.p1Protect));
+            let destroyData = this.p1pointCards[destroyIndex];
+            this.p1pointCards.splice(destroyData, 1);
+            console.log(this.p1pointSprites);
+            console.log(destroyIndex);
+            console.log(this.p1pointSprites.children);
+            this.p1pointSprites.removeChildAt(destroyIndex);
         } else if (!this.playerTurn && this.p1Protect != 0) {
+            console.log('player 1 protected one card!')
             this.p1Protect -= 1;
         } else {
             console.log('dun goofed')
@@ -441,6 +449,9 @@ var playState = {
         } else {
             window.alert('Opponent is already skipping next turn.')
         }
+    },
+    stealCard: function() {
+        console.log('steal card clicked');
     },
     allowInput: function(state){
         playState.p1handSprites.inputEnableChildren = state;
@@ -469,6 +480,7 @@ var playState = {
         
     },
     endTurn: function(){
+        console.log(this.p1hand, this.p2hand);
         if(this.endGame) {this.countDown -= 1;}
         console.log('turns left: ' +this.countDown);
         if(this.countDown <= 0) {
@@ -476,7 +488,7 @@ var playState = {
            console.log(scores);
            this.calcWinner();
         } else {
-            if(!this.skipNextTurn){maxPlayerActions = 2}else{window.alert('Opponent played a skip turn card.. no actions this turn.')};
+            if(!this.skipNextTurn){maxPlayerActions = 2}else{this.skipNextTurn = false};
             if(!playState.isInputEnabled()){return;}
                 playState.allowInput(false);
             let alphaTween = playState.fadeScreen(true);
