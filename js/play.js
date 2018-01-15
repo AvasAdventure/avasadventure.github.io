@@ -22,14 +22,32 @@ var playState = {
             playState.endTurn();
         });
         endTurnButton.scale.set(1.5,1.5);
+        // return to main menu button
         var returnButton = game.add.button(25, 25, 'return-button', function(){
-            game.state.start('menu');
+            if(!playState.isInputEnabled()){return;}
+            else {
+                playState.state.start('menu');
+            }   
+        });
+        // quick guide button
+        var guideButton = game.add.button(1700, 25, 'guide-button', function() {
+            if(!playState.isInputEnabled()){return;}
+            playState.allowInput(false);
+            actionGuide = game.add.sprite(game.world.centerX, game.world.centerY, 'action-guide');
+            actionGuide.anchor.set(0.5,0.5);
+            var closeButton = game.add.button(game.world.centerX, 900, 'close-button', function() {
+                actionGuide.destroy();
+                closeButton.destroy();
+                playState.allowInput(true)
+            });
+            closeButton.anchor.set(0.5,0.5);
         });
         //Draw pile
         var drawPileButton = game.add.button(1760, 540, 'card-back', function(){
             if(playState.blockInput){
                 return;
             }
+            if(!playState.isInputEnabled()){return;}
             playState.drawCard(playState.playerTurn);
         });
         drawPileButton.width = cardWidth;
@@ -178,6 +196,7 @@ var playState = {
     },
 
     cardClick: function(sprite, pointer){
+        if(!playState.isInputEnabled()){return;}
         let actions = this.checkActions();
         if(!actions) {
             console.log('no more actions left')
@@ -605,5 +624,4 @@ var cardFunctions = {
 		}
 		return Number(x);
 	}
-
 }
