@@ -64,9 +64,11 @@ var playState = {
         this.p1hand = [];
         this.p1Score = [];
         this.p1ScoreSum = [];
+        this.p1Protect = 0;
         this.p1Homecomingcards = [];
         this.p2Score = [];
         this.p2ScoreSum = [];
+        this.p2Protect = 0;
         this.p2hand = [];
         this.p1handSprites = game.add.group();
         this.p2handSprites = game.add.group();
@@ -284,9 +286,12 @@ var playState = {
         let cardCountryPoints = [cardCountry, cardPoints];
         if(playState.playerTurn) {  
             this.p1pointCards.push(cardCountryPoints);
-//            this.p1Score.reduce((a,b,)=>a+b, 0);
+            console.log('player 1 points length: ' + this.p1pointCards.length);
+            console.log('player 1 protection: ' + this.p1Protect);
         } else {
             this.p2pointCards.push(cardCountryPoints);
+            console.log('player 2 points length: ' + this.p2pointCards.length);
+            console.log('player 2 protection: ' + this.p2Protect);
 //            this.p2Score.reduce((a,b)=>a+b, 0);
         }
     },
@@ -371,9 +376,11 @@ var playState = {
                 break;
             case 1:
                 //Destoy point card
+                this.destroyPointCard();
                 break;
             case 2:
                 //Protect card
+                this.protectCard();
                 break;
             case 3:
                 //Skip a turn
@@ -393,6 +400,38 @@ var playState = {
             console.log('set coundDown to ' + this.endGame); 
             window.alert('HOME COMING HAS BEEN PLAYED, TURNS REMAINING: ' + this.countDown);
         } else {
+        
+        }
+    },
+    protectCard: function() {
+        if(this.playerTurn && (this.p1pointCards.length >= this.p1Protect)) {
+            this.p1Protect += 1;
+            console.log('pointcard protected: ' + this.p1Protect);
+        } else if(!this.playerTurn && (this.p2pointCards.length >= this.p2Protect)){
+            this.p2Protect += 1;
+            console.log('pointcard protected: ' + this.p2Protect);
+        } else {
+            console.log('something went wrong');
+        }
+    },
+    destroyPointCard: function(p1Protect, p2Protect) {
+        if (this.playerTurn && this.p2pointCards != 0 && this.p2Protect == 0) {
+            let destroyIndex = this.p2pointCards[Math.floor(Math.random() * (this.p2pointCards.length - this.p2Protect))];
+            console.log('card to destroy: ' + destroyIndex);
+            this.p2pointCards.splice(destroyIndex, 1);
+        } else if (this.playerTurn && this.p2Protect != 0) {
+// decrease p2protect by 1, it has protected one card
+            console.log('player 2 protected one card!')
+            this.p2Protect -= 1;
+        } else if (!this.playerTurn && this.p1pointCards != 0) {
+            let destroyIndex = this.p1pointCards[Math.floor(Math.random() * this.p1pointCards.length - this.p1Protect)];
+            console.log('card to destroy: ' + destroyIndex);
+            this.p1pointCards.splice(destroyIndex, 1);
+            console.log('after: ' + this.p1pointCards)
+        } else if (!this.playerTurn && this.p1Protect != 0) {
+            this.p1Protect -= 1;
+        } else {
+            console.log('dun goofed')
         }
     },
     allowInput: function(state){
@@ -422,8 +461,6 @@ var playState = {
         
     },
     endTurn: function(){
-        console.log('player1: '+ this.p1Score);
-        console.log('player2: '+ this.p2Score);
         if(this.endGame) {this.countDown -= 1;}
         console.log('turns left: ' +this.countDown);
         if(this.countDown <= 0) {
