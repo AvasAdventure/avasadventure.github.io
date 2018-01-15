@@ -407,10 +407,10 @@ var playState = {
     protectCard: function() {
         if(this.playerTurn && (this.p1pointCards.length >= this.p1Protect)) {
             this.p1Protect += 1;
-            console.log('pointcard protected: ' + this.p1Protect);
+            console.log('Amount of pointcard protected: ' + this.p1Protect);
         } else if(!this.playerTurn && (this.p2pointCards.length >= this.p2Protect)){
             this.p2Protect += 1;
-            console.log('pointcard protected: ' + this.p2Protect);
+            console.log('Amount of pointcard protected: ' + this.p2Protect);
         } else {
             console.log('something went wrong');
         }
@@ -420,9 +420,6 @@ var playState = {
             let destroyIndex = Math.floor(Math.random() * (this.p2pointCards.length - this.p2Protect));
             let destroyData = this.p2pointCards[destroyIndex];
             this.p2pointCards.splice(destroyData, 1);
-            console.log(this.p2pointSprites);
-            console.log(destroyIndex);
-            console.log(this.p2pointSprites.children);
             this.p2pointSprites.removeChildAt(destroyIndex[1]);
         } else if (this.playerTurn && this.p2Protect != 0) {
 // decrease p2protect by 1, it has protected one card
@@ -432,9 +429,6 @@ var playState = {
             let destroyIndex = Math.floor(Math.random() * (this.p1pointCards.length - this.p1Protect));
             let destroyData = this.p1pointCards[destroyIndex];
             this.p1pointCards.splice(destroyData, 1);
-            console.log(this.p1pointSprites);
-            console.log(destroyIndex);
-            console.log(this.p1pointSprites.children);
             this.p1pointSprites.removeChildAt(destroyIndex);
         } else if (!this.playerTurn && this.p1Protect != 0) {
             console.log('player 1 protected one card!')
@@ -451,7 +445,19 @@ var playState = {
         }
     },
     stealCard: function() {
-        console.log('steal card clicked');
+        if(this.playerTurn && this.p2handSprites.length != 0) {
+            let stealIndex = Math.floor(Math.random() * this.p2handSprites.length);
+            let stealData = this.p2handSprites.getChildAt(stealIndex);
+            this.p2handSprites.removeChildAt(stealIndex);
+            this.p1handSprites.addChild(stealData);
+        } else if (!this.playerTurn && this.p1handSprites.length != 0) {
+            let stealIndex = Math.floor(Math.random() * this.p1handSprites.length);
+            let stealData = this.p1handSprites.getChildAt(stealIndex);
+            this.p1handSprites.removeChildAt(stealIndex);
+            this.p2handSprites.addChild(stealData);
+        } else {
+            console.log('no cards to steal');
+        }
     },
     allowInput: function(state){
         playState.p1handSprites.inputEnableChildren = state;
