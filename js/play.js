@@ -352,42 +352,73 @@ var playState = {
         let winText;
             if (this.p1ScoreSum > this.p2ScoreSum ) {
                 let alphaTween = playState.fadeScreen(true);
-                winText = game.add.text(game.world.centerX, game.world.centerY - 200, 'Player 1 Won!', {fill: '#ffffff', fontSize: 72});
+                winScreen = game.add.sprite(game.world.centerX, game.world.centerY, 'win-screen');
+                winScreen.anchor.set(0.5,0.5);
+                winText = game.add.text(game.world.centerX, game.world.centerY - 305, 'Player 1 Won!', {fill: '#ffffff', fontSize: 72});
                 winText.anchor.set(0.5,0.5);
-                let button = game.add.button(game.world.centerX, game.world.centerY,'restart-button', function(){
+                scoreText = game.add.text(game.world.centerX, game.world.centerY, 'Player 1 score: ' + this.p1ScoreSum + '\n\nPlayer 2 score: ' + this.p2ScoreSum, {fill :'#ffffff', fontSize: 72});
+                scoreText.anchor.set(0.5,0.5);
+                let button1 = game.add.button(game.world.centerX - 300, game.world.centerY + 300,'new-game', function(){
+                    game.state.start('play');
+                    alphaTween = playState.fadeScreen(false);
+                    alphaTween.onComplete.add(function() {
+                    playState.allowInput(true);
+                    }, this);
+                });
+                let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
                     playState.allowInput(true);
                     }, this);
-                button.anchor.set(0.5, 0.5);
                 });
-                button.anchor.set(0.5, 0.5);        
+                button1.anchor.set(0.5, 0.5);  
+                button2.anchor.set(0.5, 0.5);      
             } else if (this.p1ScoreSum < this.p2ScoreSum) {
                 let alphaTween = playState.fadeScreen(true);
-                winText = game.add.text(game.world.centerX, game.world.centerY - 200, 'Player 2 Won!', {fill: '#ffffff', fontSize: 72});
+                winScreen = game.add.sprite(game.world.centerX, game.world.centerY, 'win-screen');
+                winScreen.anchor.set(0.5,0.5);
+                winText = game.add.text(game.world.centerX, game.world.centerY - 305, 'Player 2 Won!', {fill: '#ffffff', fontSize: 72});
                 winText.anchor.set(0.5,0.5);
-                let button = game.add.button(game.world.centerX, game.world.centerY,'restart-button', function(){
+                scoreText = game.add.text(game.world.centerX, game.world.centerY, 'Player 1 score: ' + this.p1ScoreSum + '\n\nPlayer 2 score: ' + this.p2ScoreSum, {fill :'#ffffff', fontSize: 72});
+                scoreText.anchor.set(0.5,0.5);                
+                let button1 = game.add.button(game.world.centerX - 300, game.world.centerY + 300,'new-game', function(){
+                    game.state.start('play');
+                    alphaTween = playState.fadeScreen(false);
+                    alphaTween.onComplete.add(function() {
+                    playState.allowInput(true);
+                    }, this);
+                });
+                let button2 = game.add.button(game.world.centerX + 300 , game.world.centerY + 300,'menu-button', function(){
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
                     playState.allowInput(true);
                     }, this);
                 });
-                button.anchor.set(0.5, 0.5);
+                button1.anchor.set(0.5, 0.5);
+                button2.anchor.set(0.5, 0.5);
             } else {
                 let alphaTween = playState.fadeScreen(true);
-                winText = game.add.text(game.world.centerX, game.world.centerY - 200, 'DRAW!', {fill: '#ffffff', fontSize: 72});
+                winScreen = game.add.sprite(game.world.centerX, game.world.centerY, 'win-screen');
+                winScreen.anchor.set(0.5,0.5);
+                winText = game.add.text(game.world.centerX, game.world.centerY - 305, 'DRAW!', {fill: '#ffffff', fontSize: 72});
                 winText.anchor.set(0.5,0.5);
-                let button = game.add.button(game.world.centerX, game.world.centerY,'restart-button', function(){
-                    game.state.start('menu');
+                scoreText = game.add.text(game.world.centerX, game.world.centerY, 'Player 1 score: ' + this.p1ScoreSum + '\n\nPlayer 2 score: ' + this.p2ScoreSum, {fill :'#ffffff', fontSize: 72});
+                scoreText.anchor.set(0.5,0.5);                
+                let button1 = game.add.button(game.world.centerX - 300, game.world.centerY + 300,'new-game', function(){
+                    game.state.start('play');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
                     playState.allowInput(true);
                     }, this);
-                button.anchor.set(0.5, 0.5);
-            });
-        }
+                });
+                let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
+                    game.state.start('menu');
+                    }, this);
+                button1.anchor.set(0.5, 0.5);
+                button2.anchor.set(0.5, 0.5);
+            };
     },
     playAction: function(cardNr){
         let cardData = playState.deck[cardNr];
@@ -507,17 +538,13 @@ var playState = {
         
     },
     endTurn: function(){
-        if(this.endGame) {
-            this.countDown -= 1;
-            console.log('turns left: ' +this.countDown);
-        }
         if(this.countDown <= 0) {
            var scores = this.getScore();
-           console.log(scores);
            this.calcWinner();
         } else {
             if(!this.skipNextTurn){maxPlayerActions = 2}else{this.skipNextTurn = false};
             if(!playState.isInputEnabled()){return;}
+            if(this.endGame) {this.countDown -= 1;console.log('Turns til homecoming: ' + this.countDown)}
                 playState.allowInput(false);
             let alphaTween = playState.fadeScreen(true);
             alphaTween.onComplete.add(function(){
