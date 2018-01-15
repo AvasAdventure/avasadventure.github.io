@@ -75,6 +75,7 @@ var playState = {
         this.animatingSprites = game.add.group();
 
         this.endGame = false;
+        this.skipNextTurn = false;
         this.countDown = 5;
     },
     create: function() {
@@ -383,7 +384,7 @@ var playState = {
                 this.protectCard();
                 break;
             case 3:
-                //Skip a turn
+                this.skipTurn();
                 break;
             case 4:
                 //Steal card
@@ -434,6 +435,13 @@ var playState = {
             console.log('dun goofed')
         }
     },
+    skipTurn: function() {
+        if(!this.skipNextTurn) {
+            this.skipNextTurn = true;
+        } else {
+            window.alert('Opponent is already skipping next turn.')
+        }
+    },
     allowInput: function(state){
         playState.p1handSprites.inputEnableChildren = state;
         playState.p1handSprites.forEach(element => {
@@ -468,7 +476,7 @@ var playState = {
            console.log(scores);
            this.calcWinner();
         } else {
-            maxPlayerActions = 2;
+            if(!this.skipNextTurn){maxPlayerActions = 2}else{window.alert('Opponent played a skip turn card.. no actions this turn.')};
             if(!playState.isInputEnabled()){return;}
                 playState.allowInput(false);
             let alphaTween = playState.fadeScreen(true);
