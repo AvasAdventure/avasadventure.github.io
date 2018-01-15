@@ -590,7 +590,7 @@ var playState = {
     },
     checkActions: function(){
         if (maxPlayerActions != 0) {
-            console.log('actions left: ' + maxPlayerActions);
+//            let actionAlert = game.add.sprite(game.word.centerX, game.world.centerY, 'No more Actions Left!')
             return true;
         } else {
             return false;

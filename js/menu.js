@@ -1,5 +1,7 @@
 var menuState = {
 	create: function() {
+		var background = game.add.sprite(game.world.centerX, game.world.centerY, 'background');
+			background.anchor.set(0.5, 0.5);
 // ava logo, dropping in from top with bounce
 		var loadLogo = game.add.sprite(game.world.centerX, game.world.centerY - 300, 'ava_logo');
 			loadLogo.anchor.set(0.5);
@@ -14,5 +16,6 @@ var menuState = {
 		game.state.start('play');
 	},
 	update: function() {
+
 	}
 }
