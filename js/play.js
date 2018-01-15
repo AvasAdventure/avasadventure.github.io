@@ -17,12 +17,14 @@ var playState = {
         this.deck = jsons;
         
         //end turn button
-        var endTurnButton = game.add.button(0, 0, 'endturn-button', function(){
+        var endTurnButton = game.add.button(120, 120, 'endturn-button', function(){
             if(playState.blockInput){return;}
             playState.endTurn();
         });
-        endTurnButton.scale.set(.5,.5);
-
+        endTurnButton.scale.set(1.5,1.5);
+        var returnButton = game.add.button(25, 25, 'return-button', function(){
+            game.state.start('menu');
+        });
         //Draw pile
         var drawPileButton = game.add.button(1760, 540, 'card-back', function(){
             if(playState.blockInput){
@@ -183,7 +185,6 @@ var playState = {
             if(pointer.leftButton.isDown){
             //Play as action card
             let card = sprite.cardNr;
-
             //Remove from hand
             sprite = playState.animatingSprites.add(sprite);
             
@@ -221,6 +222,7 @@ var playState = {
             });
             
             }else if(pointer.rightButton.isDown){
+
             //Play as action card
             let card = sprite.cardNr;
             //Remove from hand
@@ -260,7 +262,7 @@ var playState = {
                 //Play action
                 playState.playPoints(sprite.cardNr);
                 maxPlayerActions -= 1;
-            });
+                });
             }
         }
     },
@@ -571,6 +573,9 @@ var cardFunctions = {
         spr.height = height;
         spr.cardNr = card;
         return spr;
+    },
+    showCardDetails: function() {
+
     },
     flipCard: function(card){
         let backcard = game.add.sprite(card.x, card.y, 'card-back');
