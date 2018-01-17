@@ -11,6 +11,8 @@ var menuState = {
 			startButton.anchor.set(0.5, 0.5);
 			startButton.scale.set(0.8, 0.8);
 // options button
+
+		game.add.audio('menutheme', 0.5, true);
 	},
 	play: function() {
 		game.state.start('play');

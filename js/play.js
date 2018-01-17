@@ -2,6 +2,19 @@ var playState = {
 	preload: function() {
         var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
 
+        //Music
+        this.music = [
+            game.add.audio('background1'),
+            game.add.audio('background2'),
+            game.add.audio('background3')
+        ];
+        //Sounds
+        this.cardSounds = [
+            game.add.audio('card1'),
+            game.add.audio('card2'),
+            game.add.audio('card3')
+        ];
+
         //for fading
         this.fadeSprite = game.add.sprite(0, 0, 'black');
         this.fadeSprite.alpha = 0;
@@ -99,6 +112,11 @@ var playState = {
         this.countDown = 5;
     },
     create: function() {
+        //Play music
+        let track = this.music[Math.floor(Math.random() * this.music.length)];
+        track.play();
+        track.volume = 0.3;
+
         playState.p1handSprites.visible = playState.playerTurn;
         playState.p1pointSprites.visible = playState.playerTurn;
         playState.p2handSprites.visible = !playState.playerTurn;
@@ -127,25 +145,27 @@ var playState = {
             let actions = this.checkActions();
             if(!actions) {'no more actions left'}
             for (let i = 0; i < amount; i++) {
-            //Allowed?
-            let handSize;
-            if(player){
-                handSize = playState.p1handSprites.length;
-            }else{
-                handSize = playState.p2handSprites.length;
-            }
-            if(handSize >= maxHandSize){
-                console.log('not allowed');
-                return;
-            } else {
+                //Allowed?
+                let handSize;
+                if(player){
+                    handSize = playState.p1handSprites.length;
+                }else{
+                    handSize = playState.p2handSprites.length;
+                }
+                if(handSize >= maxHandSize){
+                    console.log('not allowed');
+                    return;
+                } else {
 
-            //Get a card
+                //Get a card
                 let card = playState.drawPile[0];
                 playState.drawPile.splice(0, 1);
-            //Animation if it's for the current player
+                //Animation if it's for the current player
                 if(player == playState.playerTurn){
 
                     game.time.events.add(500 * i, function() { //wait a bit before dealing next card
+                        
+                        playState.playCardSound();
                         let handSize;
                         let cardSpr;
                     //get hand size and add to hand
@@ -202,85 +222,88 @@ var playState = {
             console.log('no more actions left')
         } else {
             if(pointer.leftButton.isDown){
-            //Play as action card
-            let card = sprite.cardNr;
-            //Remove from hand
-            sprite = playState.animatingSprites.add(sprite);
-            
-            //Move to center
-            game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
-            .onUpdateCallback(function(){
-                playState.allowInput(false);
-            });
-
-            //Save replay
-            playState.replaySequence.push(1);
-            playState.rsAction.push(card);
-
-            //Play action
-            playState.playAction(sprite.cardNr);
-
-            game.time.events.add(1000, function() { //wait a sec
-                let backcard = cardFunctions.flipCard(sprite);
-                let backX = 160;
-                game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
+                //Play as action card
+                let card = sprite.cardNr;
+                //Remove from hand
+                sprite = playState.animatingSprites.add(sprite);
+                
+                //Move to center
+                game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
                 .onUpdateCallback(function(){
                     playState.allowInput(false);
-                }, this)
-                .onComplete.add(function(){
-                    if(playState.discardPileSpr == undefined){
-                        playState.discardPileSpr = game.add.sprite(160, game.world.centerY, 'card-back');
-                        playState.discardPileSpr.anchor.set(0.5, 0.5);
-                        playState.discardPileSpr.width = cardWidth;
-                        playState.discardPileSpr.height = cardHeight;
-                    }
-                    backcard.destroy();
-                    playState.allowInput(true);
-                }, this);
-                maxPlayerActions -= 1;
-            });
-            
-            }else if(pointer.rightButton.isDown){
-
-            //Play as action card
-            let card = sprite.cardNr;
-            //Remove from hand
-            sprite = playState.animatingSprites.add(sprite);
-            //Move to center
-            game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
-            .onUpdateCallback(function(){
-                playState.allowInput(false);
-            })
-            .onComplete.add(function(){
-                let backcard = cardFunctions.flipCard(sprite);
-                if(playState.playerTurn){
-                    backcard = playState.p1pointSprites.add(backcard);
-                }else{
-                    backcard = playState.p2pointSprites.add(backcard);
-                }
-
-                let backX;
-                if(playState.playerTurn){
-                    backX = 460 + (cardWidth/1.5) * (playState.p1pointSprites.length-1);
-                }else{
-                    backX = 460 + (cardWidth/1.5) * (playState.p2pointSprites.length-1);
-                }
-
-                game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
-                .onUpdateCallback(function(){
-                    playState.allowInput(false);
-                }, this)
-                .onComplete.add(function(){
-                    playState.allowInput(true);
-                }, this);
+                });
 
                 //Save replay
-                playState.replaySequence.push(2); //0=draw, 1=action, 2=point
-                playState.rsPoints += 1;
+                playState.replaySequence.push(1);
+                playState.rsAction.push(card);
 
                 //Play action
-                playState.playPoints(sprite.cardNr);
-                maxPlayerActions -= 1;
+                playState.playAction(sprite.cardNr);
+                playState.playCardSound();
+
+                game.time.events.add(1000, function() { //wait a sec
+                    let backcard = cardFunctions.flipCard(sprite);
+                    let backX = 160;
+                    game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
+                    .onUpdateCallback(function(){
+                        playState.allowInput(false);
+                    }, this)
+                    .onComplete.add(function(){
+                        if(playState.discardPileSpr == undefined){
+                            playState.discardPileSpr = game.add.sprite(160, game.world.centerY, 'card-back');
+                            playState.discardPileSpr.anchor.set(0.5, 0.5);
+                            playState.discardPileSpr.width = cardWidth;
+                            playState.discardPileSpr.height = cardHeight;
+                        }
+                        backcard.destroy();
+                        playState.allowInput(true);
+                    }, this);
+                    maxPlayerActions -= 1;
+                });
+                
+            }else if(pointer.rightButton.isDown){
+                
+                playState.playCardSound();
+
+                //Play as action card
+                let card = sprite.cardNr;
+                //Remove from hand
+                sprite = playState.animatingSprites.add(sprite);
+                //Move to center
+                game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
+                .onUpdateCallback(function(){
+                    playState.allowInput(false);
+                })
+                .onComplete.add(function(){
+                    let backcard = cardFunctions.flipCard(sprite);
+                    if(playState.playerTurn){
+                        backcard = playState.p1pointSprites.add(backcard);
+                    }else{
+                        backcard = playState.p2pointSprites.add(backcard);
+                    }
+
+                    let backX;
+                    if(playState.playerTurn){
+                        backX = 460 + (cardWidth/1.5) * (playState.p1pointSprites.length-1);
+                    }else{
+                        backX = 460 + (cardWidth/1.5) * (playState.p2pointSprites.length-1);
+                    }
+
+                    game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
+                    .onUpdateCallback(function(){
+                        playState.allowInput(false);
+                    }, this)
+                    .onComplete.add(function(){
+                        playState.allowInput(true);
+                    }, this);
+
+                    //Save replay
+                    playState.replaySequence.push(2); //0=draw, 1=action, 2=point
+                    playState.rsPoints += 1;
+
+                    //Play action
+                    playState.playPoints(sprite.cardNr);
+                    maxPlayerActions -= 1;
                 });
             }
         }
@@ -596,7 +619,11 @@ var playState = {
             return false;
         }
     },
-
+    playCardSound: function(){
+        let sound = this.cardSounds[Math.floor(Math.random() * this.cardSounds.length)];
+        sound.play();
+        sound.volume = 0.5;
+    }
 }
 
 var cardFunctions = {
