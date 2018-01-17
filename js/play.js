@@ -160,9 +160,10 @@ var playState = {
                 //Get a card
                 let card = playState.drawPile[0];
                 playState.drawPile.splice(0, 1);
+                playState.updateHand();
                 //Animation if it's for the current player
                 if(player == playState.playerTurn){
-
+                    
                     game.time.events.add(500 * i, function() { //wait a bit before dealing next card
                         
                         playState.playCardSound();
@@ -240,6 +241,7 @@ var playState = {
                 //Play action
                 playState.playAction(sprite.cardNr);
                 playState.playCardSound();
+                playState.updateHand();
 
                 game.time.events.add(1000, function() { //wait a sec
                     let backcard = cardFunctions.flipCard(sprite);
@@ -264,6 +266,7 @@ var playState = {
             }else if(pointer.rightButton.isDown){
                 
                 playState.playCardSound();
+                playState.updateHand();
 
                 //Play as action card
                 let card = sprite.cardNr;
@@ -617,6 +620,20 @@ var playState = {
             return true;
         } else {
             return false;
+        }
+    },
+    updateHand: function(){
+        for (let i = 0; i < playState.p1handSprites.children.length; i++) {
+            const element = playState.p1handSprites.children[i];
+            let newX = (385 + (cardWidth/1.5) * i);
+            let newY = 900;
+            game.add.tween(element).to({x: newX, y: newY}, 500, null, true, 0);
+        }
+        for (let i = 0; i < playState.p2handSprites.children.length; i++) {
+            const element = playState.p2handSprites.children[i];
+            let newX = (385 + (cardWidth/1.5) * i);
+            let newY = 900;
+            game.add.tween(element).to({x: newX, y: newY}, 500, null, true, 0);
         }
     },
     playCardSound: function(){
