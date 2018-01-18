@@ -15,7 +15,6 @@ var playState = {
             game.add.audio('card3')
         ];
         this.soundClick = game.add.audio('buttonclick');
-        this.soundClick.volume = 1;
 
         //for fading
         this.fadeSprite = game.add.sprite(0, 0, 'black');
@@ -43,7 +42,7 @@ var playState = {
             if(!playState.isInputEnabled()){return;}
             
             playState.soundClick.play();
-            playState.backgroundTrack.destroy();
+            playState.backgroundTrack.stop();
             playState.state.start('menu');
         });
         // quick guide button
@@ -118,6 +117,8 @@ var playState = {
         this.countDown = 5;
     },
     create: function() {
+        game.sound.stopAll();
+
         this.playMusic();
 
         playState.p1handSprites.visible = playState.playerTurn;
