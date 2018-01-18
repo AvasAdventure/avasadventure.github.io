@@ -23,7 +23,7 @@ var loadState = {
 
 		game.load.image('steal-event', 'assets/steal-event.png');
 		game.load.image('strike-event', 'assets/strike-event.png');
-
+		game.load.image('no-actions', 'assets/noactions-event.png');
 
 		//Sounds
 		game.load.audio('menutheme', 'assets/audio/menutheme.wav');
@@ -39,6 +39,7 @@ var loadState = {
 		game.load.json('card-decks', deckStorageLink + "countries.json");	
 	},
 	create: function() {
+		console.log('loadState did load');
 		game.state.start('secondLoad');
 	}
 }

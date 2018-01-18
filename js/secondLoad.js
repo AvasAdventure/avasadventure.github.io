@@ -17,6 +17,7 @@ var secondLoadState = {
 	},
 	create: function() {
 		//game.state.start('menu');
-		game.state.start('play');
+		game.state.start('menu');
+		console.log('secondLoad did load');
 	}
 }

@@ -1,7 +1,6 @@
 var playState = {
 	preload: function() {
         var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
-
         //Music
         this.music = [
             game.add.audio('background1'),
@@ -68,7 +67,8 @@ var playState = {
                 return;
             }
             if(!playState.isInputEnabled()){return;}
-            playState.drawCard(playState.playerTurn);
+                playState.drawCard(playState.playerTurn);
+            if(actionCost){maxPlayerActions -=1};
         });
         drawPileButton.width = cardWidth;
         drawPileButton.height = cardHeight;
@@ -114,6 +114,8 @@ var playState = {
         this.p2handSprites = game.add.group();
         this.animatingSprites = game.add.group();
 
+        cardStolen = false;
+        skipNextTurn = false;
 
         this.countDown = 5;
     },
@@ -219,15 +221,19 @@ var playState = {
                     }
                 }
             } 
-        if(actionCost){maxPlayerActions -=1};
             
     },
-
     cardClick: function(sprite, pointer){
         if(!playState.isInputEnabled()){return;}
         let actions = this.checkActions();
         if(!actions) {
-            console.log('no more actions left')
+            var noActions = game.add.sprite(game.world.centerX, game.world.centerY, 'no-actions');
+            noActions.anchor.set(0.5,0.5);
+            var closeButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                closeButton.destroy();
+                noActions.destroy();
+            }, this);
+            closeButton.anchor.set(0.5,0.5);
         } else {
             if(pointer.leftButton.isDown){
                 //Play as action card
@@ -371,10 +377,6 @@ var playState = {
                 return; 
             }
         }
-        console.log(this.p1pointCards);
-        console.log(this.p1Score);
-        console.log(this.p2pointCards);
-        console.log(this.p2Score);
     },
     calcWinner: function(p1Score, p2Score) {
         // sum of scores
@@ -530,7 +532,7 @@ var playState = {
     },
     skipTurn: function() {
         if(!this.skipNextTurn) {
-            this.skipNextTurn = true;
+            skipNextTurn = true;
         } else {
             window.alert('Opponent is already skipping next turn.')
         }
@@ -541,13 +543,40 @@ var playState = {
             let stealData = this.p2handSprites.getChildAt(stealIndex);
             this.p2handSprites.removeChildAt(stealIndex);
             this.p1handSprites.addChild(stealData);
+            cardStolen = true;
         } else if (!this.playerTurn && this.p1handSprites.length != 0) {
             let stealIndex = Math.floor(Math.random() * this.p1handSprites.length);
             let stealData = this.p1handSprites.getChildAt(stealIndex);
             this.p1handSprites.removeChildAt(stealIndex);
             this.p2handSprites.addChild(stealData);
+            cardStolen = true;
         } else {
             console.log('no cards to steal');
+        }
+    },
+    showActionEvents: function() {
+        if (cardStolen) {
+            stealEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'steal-event');
+            stealEvent.anchor.set(0.5,0.5)
+            skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                stealEvent.destroy();
+                skipButton.destroy();
+            }, this);
+            skipButton.anchor.set(0.5,0.5);
+            console.log('show cardStolen event');
+        } else if (skipNextTurn) {
+            skipEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'strike-event');
+            skipEvent.anchor.set(0.5,0.5);
+            skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                skipEvent.destroy();
+                skipButton.destroy();
+            }, this);
+            skipButton.anchor.set(0.5,0.5);
+            console.log('show skipTurn event');
+        } else {
+            console.log('nuffin');
+            console.log('Card Stolen?: ' + this.cardStolen);
+            console.log('Skip turn?: ' + this.skipNextTurn);
         }
     },
     allowInput: function(state){
@@ -574,9 +603,10 @@ var playState = {
         }else{
             return playState.p2handSprites.inputEnableChildren && playState.p2pointSprites.inputEnableChildren;
         }
-        
     },
     endTurn: function(){
+        console.log('card stolen: ' + cardStolen);
+        console.log('has to skip this turn ' + skipNextTurn);
         if(this.countDown <= 0) {
            var scores = this.getScore();
            this.calcWinner();
@@ -620,6 +650,7 @@ var playState = {
                     //playState.playReplay();
                     playState.replay();
                     playState.allowInput(true);
+                    playState.showActionEvents();
                 }, this);
             });
             button.anchor.set(0.5, 0.5);
