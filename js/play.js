@@ -1,18 +1,21 @@
 var playState = {
 	preload: function() {
         var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
+
         //Music
         this.music = [
             game.add.audio('background1'),
             game.add.audio('background2'),
             game.add.audio('background3')
         ];
+
         //Sounds
         this.cardSounds = [
             game.add.audio('card1'),
             game.add.audio('card2'),
             game.add.audio('card3')
         ];
+
         this.soundClick = game.add.audio('buttonclick');
 
         //for fading
@@ -70,6 +73,7 @@ var playState = {
                 playState.drawCard(playState.playerTurn);
             if(actionCost){maxPlayerActions -=1};
         });
+
         drawPileButton.width = cardWidth;
         drawPileButton.height = cardHeight;
         drawPileButton.anchor.set(0.5, 0.5);
@@ -78,6 +82,7 @@ var playState = {
 		for(let i = 0; i < this.deck.length; i++){
 			dpile[i] = i;
 		}
+
         this.drawPile = cardFunctions.shuffle(dpile);
         this.discardPile = [];
         this.discardPileSpr;
@@ -92,7 +97,7 @@ var playState = {
         this.replayCards = [];
         this.rsAction = [];
         this.rsPoints = 0;
-        //Setup players
+        //Setup player
         ///playerTurn = true -> p1 else p2
         if(game.rnd.integerInRange(1, 2) == 1){
             this.playerTurn = true;
@@ -136,6 +141,7 @@ var playState = {
         this.p1handSprites.onChildInputDown.add(this.cardClick, this);
         this.p1handSprites.onChildInputOver.add(this.cardHoverOver, this);
         this.p1handSprites.onChildInputOut.add(this.cardHoverOut, this);
+
         this.p2handSprites.inputEnableChildren = true;        
         this.p2handSprites.onChildInputDown.add(this.cardClick, this);
         this.p2handSprites.onChildInputOver.add(this.cardHoverOver, this);
@@ -220,24 +226,27 @@ var playState = {
                     cardSpr.y = newY;
                     }
                 }
-            } 
-            
+            }            
     },
     cardClick: function(sprite, pointer){
         if(!playState.isInputEnabled()){return;}
         let actions = this.checkActions();
         if(!actions) {
+            playState.allowInput(false);
             var noActions = game.add.sprite(game.world.centerX, game.world.centerY, 'no-actions');
             noActions.anchor.set(0.5,0.5);
             var closeButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
                 closeButton.destroy();
                 noActions.destroy();
+                playState.allowInput(true)
             }, this);
             closeButton.anchor.set(0.5,0.5);
         } else {
             if(pointer.leftButton.isDown){
+
                 //Play as action card
                 let card = sprite.cardNr;
+
                 //Remove from hand
                 sprite = playState.animatingSprites.add(sprite);
                 
@@ -353,7 +362,7 @@ var playState = {
             this.p2pointCards.push(cardCountryPoints);
             console.log('player 2 points length: ' + this.p2pointCards.length);
             console.log('player 2 protection: ' + this.p2Protect);
-//            this.p2Score.reduce((a,b)=>a+b, 0);
+//      this.p2Score.reduce((a,b)=>a+b, 0);
         }
     },
     getScore: function() { 
@@ -492,7 +501,15 @@ var playState = {
         if (!this.endGame) {
             this.endGame = true;
             console.log('set coundDown to ' + this.endGame); 
-            window.alert('HOME COMING HAS BEEN PLAYED, TURNS REMAINING: ' + this.countDown);
+            playState.allowInput(false);
+            var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
+            showHomeComing.anchor.set(0.5,0.5);
+            var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                showHomeComing.destroy();
+                skipButton.destroy();
+                playState.allowInput(true);
+            }, this);
+            skipButton.anchor.set(0.5,0.5);
         } else {
         
         }
@@ -556,20 +573,24 @@ var playState = {
     },
     showActionEvents: function() {
         if (cardStolen) {
+            playState.allowInput(false);
             stealEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'steal-event');
             stealEvent.anchor.set(0.5,0.5)
             skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
                 stealEvent.destroy();
                 skipButton.destroy();
+                playState.allowInput(true);
             }, this);
             skipButton.anchor.set(0.5,0.5);
             console.log('show cardStolen event');
         } else if (skipNextTurn) {
+            playState.allowInput(false);
             skipEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'strike-event');
             skipEvent.anchor.set(0.5,0.5);
             skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
                 skipEvent.destroy();
                 skipButton.destroy();
+                playState.allowInput(true);
             }, this);
             skipButton.anchor.set(0.5,0.5);
             console.log('show skipTurn event');
@@ -597,6 +618,7 @@ var playState = {
             element.inputEnabled = state;
         });
     },
+
     isInputEnabled: function(){
         if(playState.playerTurn){
             return playState.p1handSprites.inputEnableChildren && playState.p1pointSprites.inputEnableChildren;
@@ -604,6 +626,7 @@ var playState = {
             return playState.p2handSprites.inputEnableChildren && playState.p2pointSprites.inputEnableChildren;
         }
     },
+
     endTurn: function(){
         console.log('card stolen: ' + cardStolen);
         console.log('has to skip this turn ' + skipNextTurn);
@@ -657,6 +680,7 @@ var playState = {
         });
         }    
     },
+
     fadeScreen: function(dir){
         playState.fadeSprite.bringToTop();
         if(dir){
@@ -665,6 +689,7 @@ var playState = {
             return game.add.tween(playState.fadeSprite).to({alpha: 0}, 500, null, true, 0);
         }
     },
+
     checkActions: function(){
         if (maxPlayerActions != 0) {
 //            let actionAlert = game.add.sprite(game.word.centerX, game.world.centerY, 'No more Actions Left!')
@@ -673,6 +698,7 @@ var playState = {
             return false;
         }
     },
+
     updateHand: function(){
         for (let i = 0; i < playState.p1handSprites.children.length; i++) {
             const element = playState.p1handSprites.children[i];
@@ -687,11 +713,13 @@ var playState = {
             game.add.tween(element).to({x: newX, y: newY}, 500, null, true, 0);
         }
     },
+
     playCardSound: function(){
         let sound = this.cardSounds[Math.floor(Math.random() * this.cardSounds.length)];
         sound.play();
         sound.volume = 0.5;
     },
+
     playMusic: function(){
         try{
             this.backgroundTrack = this.music[Math.floor(Math.random() * this.music.length)];
@@ -794,7 +822,6 @@ var playState = {
         }
     }
 }
-
 var cardFunctions = {
     shuffle: function(cards) {
         var currentIndex = cards.length, temporaryValue, randomIndex;
@@ -807,6 +834,7 @@ var cardFunctions = {
 		}
 		return cards;
     },
+
     showCardSprite: function(card, x, y, width, height){
         let countryIndex = this.getCountryIndex(card);
         let spriteIndex = this.getSpriteIndex(card);
@@ -817,9 +845,11 @@ var cardFunctions = {
         spr.cardNr = card;
         return spr;
     },
+
     showCardDetails: function() {
 
     },
+
     flipCard: function(card){
         let backcard = game.add.sprite(card.x, card.y, 'card-back');
         backcard.anchor.set(0.5, 0.5);
@@ -840,6 +870,7 @@ var cardFunctions = {
 		}
 		return Number(count);
 	},
+
 	getSpriteIndex: function(number){
 		var x = number;
 		while(x >= deckLength){

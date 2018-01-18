@@ -24,6 +24,7 @@ var loadState = {
 		game.load.image('steal-event', 'assets/steal-event.png');
 		game.load.image('strike-event', 'assets/strike-event.png');
 		game.load.image('no-actions', 'assets/noactions-event.png');
+		game.load.image('home-coming', 'assets/home-coming.png');
 
 		//Sounds
 		game.load.audio('menutheme', 'assets/audio/menutheme.wav');
