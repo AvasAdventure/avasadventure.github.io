@@ -149,7 +149,6 @@ var playState = {
     drawCard: function(player, amount = 1, saveReplay = true, actionCost = true){
             let actions = this.checkActions();
             if(!actions) {return};
-                console.log(actionCost, maxPlayerActions);
             for (let i = 0; i < amount; i++) {
                 //Allowed?
                 let handSize;
