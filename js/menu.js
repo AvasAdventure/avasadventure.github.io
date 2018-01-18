@@ -13,7 +13,7 @@ var menuState = {
 // options button
 
 		game.sound.stopAll();
-		this.music = game.add.audio('menutheme', 0.5, true).play();
+		this.music = game.add.audio('menutheme', 0.1, true).play();
 	},
 	play: function() {
         game.sound.stopAll();
