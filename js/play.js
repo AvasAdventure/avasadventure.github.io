@@ -112,10 +112,7 @@ var playState = {
         this.countDown = 5;
     },
     create: function() {
-        //Play music
-        let track = this.music[Math.floor(Math.random() * this.music.length)];
-        track.play();
-        track.volume = 0.3;
+        this.playMusic();
 
         playState.p1handSprites.visible = playState.playerTurn;
         playState.p1pointSprites.visible = playState.playerTurn;
@@ -583,6 +580,10 @@ var playState = {
                 playState.p2pointSprites.visible = !playState.playerTurn;
 
                 playState.animatingSprites.removeAll(true);
+                playState.replayCards.forEach(element => {
+                    element.destroy();
+                });
+
             //Add text
             let playerText;
             if(!playState.playerTurn){
@@ -599,6 +600,7 @@ var playState = {
                 alphaTween = playState.fadeScreen(false);
                 alphaTween.onComplete.add(function() {
                     //playState.playReplay();
+                    playState.replay();
                     playState.allowInput(true);
                 }, this);
             });
@@ -640,6 +642,103 @@ var playState = {
         let sound = this.cardSounds[Math.floor(Math.random() * this.cardSounds.length)];
         sound.play();
         sound.volume = 0.5;
+    },
+    playMusic: function(){
+        this.backgroundTrack = this.music[Math.floor(Math.random() * this.music.length)];
+        this.backgroundTrack.play();
+        this.backgroundTrack.volume = 0.3;
+        this.backgroundTrack.onStop.add(this.playMusic, this);
+    },
+    replay: function(){
+        let otherPointCardCount;
+        if(playState.playerTurn){
+            otherPointCardCount = playState.p2pointCards.length;
+        }else{
+            otherPointCardCount = playState.p1pointCards.length;
+        }
+        
+        otherPointCardCount -= playState.rsPoints;
+        let pointAmount = otherPointCardCount;
+        let actionAmount = 0;
+        let seq = playState.replaySequence;
+        let rsAction = playState.rsAction;
+        playState.rsPoints = 0;
+        playState.rsAction = [];
+        playState.replaySequence = [];
+
+        for(let i = 0; i < seq.length; i++){
+            game.time.events.add(800 * i, function() {
+                switch(seq[i]){
+                    case 0: //draw
+                        var spr = game.add.sprite(1760, 540, 'card-back');
+                        spr.width = cardWidth;
+                        spr.height = cardHeight;
+                        spr.anchor.set(0.5, 0.5);
+                        playState.replayCards.push(spr);
+                        var newX = game.world.centerX;
+                        var newY = 0 - cardHeight;
+                        var tween = game.add.tween(spr).to({x: newX, y: newY, width: cardWidthSmall, height: cardHeightSmall}, 500, null, true, 0)
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            playState.blockInput = false;
+                        }, this);
+                        break;
+                    case 1: //action
+                    console.log(rsAction[actionAmount]);
+                        var cardSpr = cardFunctions.showCardSprite(rsAction[actionAmount], game.world.centerX, 0 - cardHeight, cardWidthSmall, cardHeightSmall);
+                        playState.replayCards.push(cardSpr);
+                        var actionX = game.world.centerX;
+                        var actionY = game.world.centerY;
+                        game.add.tween(cardSpr).to({x: actionX, y: actionY, width: cardWidth, height: cardHeight}, 500, null, true, 0) //to middle
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            game.time.events.add(500, function() { //dramatic 'play' effect
+                                let backcard = cardFunctions.flipCard(cardSpr);
+                                let backX = 160;
+                                game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)  //to discard pile
+                                .onUpdateCallback(function(){
+                                    playState.blockInput = true;
+                                }, this)
+                                .onComplete.add(function(){
+                                    if(playState.discardPileSpr == undefined){
+                                        playState.discardPileSpr = game.add.sprite(160, game.world.centerY, 'card-back');
+                                        playState.discardPileSpr.anchor.set(0.5, 0.5);
+                                        playState.discardPileSpr.width = cardWidth;
+                                        playState.discardPileSpr.height = cardHeight;
+                                    }
+                                    backcard.destroy();
+                                    playState.blockInput = false;
+                                }, this);
+                            });
+                        }, this);
+                        
+                        game.add.tween(cardSpr).to({width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0); //scaling
+                        actionAmount++;
+                        break;
+                    case 2: //point
+                        var spr = game.add.sprite(game.world.centerX, 0 - cardHeight, 'card-back');
+                        spr.width = cardWidth;
+                        spr.height = cardHeight;
+                        spr.anchor.set(0.5, 0.5);
+                        playState.replayCards.push(spr);
+                        var newXx = 535 + ((cardWidthSmall/2) * pointAmount);
+                        var newYy = 186;
+                        var tween = game.add.tween(spr).to({x: newXx, y: newYy, width: cardWidthSmall, height: cardHeightSmall}, 500, null, true, 0)
+                        .onUpdateCallback(function(){
+                            playState.blockInput = true;
+                        }, this)
+                        .onComplete.add(function(){
+                            playState.blockInput = false;
+                        }, this);
+                        pointAmount += 1;
+                        break;
+                } 
+            });
+        }
     }
 }
 
