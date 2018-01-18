@@ -20,7 +20,6 @@ game.state.add('boot', bootState);
 game.state.add('load', loadState);
 game.state.add('secondLoad', secondLoadState);
 game.state.add('menu', menuState);
-game.state.add('options', optionsState);
 game.state.add('play', playState);
 
 //Start game

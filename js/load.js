@@ -19,6 +19,11 @@ var loadState = {
 		game.load.image('close-button', 'assets/close-button.png');
 		game.load.image('menu-button', 'assets/menu-button.png');
 		game.load.image('new-game', 'assets/new-game.png');
+// event placeholders
+
+		game.load.image('steal-event', 'assets/steal-event.png');
+		game.load.image('strike-event', 'assets/strike-event.png');
+
 
 		//Sounds
 		game.load.audio('menutheme', 'assets/audio/menutheme.wav');
