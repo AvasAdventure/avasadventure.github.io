@@ -43,6 +43,8 @@ var playState = {
             
             playState.soundClick.play();
             playState.backgroundTrack.stop();
+            game.sound.stopAll();
+            playState.backgroundTrack.destroy();
             playState.state.start('menu');
         });
         // quick guide button
@@ -399,6 +401,7 @@ var playState = {
                 });
                 let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
                     game.sound.stopAll();
+                    playState.backgroundTrack.destroy();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -424,6 +427,7 @@ var playState = {
                 });
                 let button2 = game.add.button(game.world.centerX + 300 , game.world.centerY + 300,'menu-button', function(){
                     game.sound.stopAll();
+                    playState.backgroundTrack.destroy();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -444,11 +448,12 @@ var playState = {
                     game.state.start('play');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
-                    playState.allowInput(true);
+                        playState.allowInput(true);
                     }, this);
                 });
                 let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
                     game.sound.stopAll();
+                    playState.backgroundTrack.destroy();
                     game.state.start('menu');
                 }, this);
                 button1.anchor.set(0.5, 0.5);
@@ -658,10 +663,14 @@ var playState = {
         sound.volume = 0.5;
     },
     playMusic: function(){
-        this.backgroundTrack = this.music[Math.floor(Math.random() * this.music.length)];
-        this.backgroundTrack.play();
-        this.backgroundTrack.volume = 0.3;
-        this.backgroundTrack.onStop.add(this.playMusic, this);
+        try{
+            this.backgroundTrack = this.music[Math.floor(Math.random() * this.music.length)];
+            this.backgroundTrack.play();
+            this.backgroundTrack.volume = 0.3;
+            this.backgroundTrack.onStop.add(this.playMusic, this);
+        }catch(e){
+            console.log(e);
+        }
     },
     replay: function(){
         let otherPointCardCount;
