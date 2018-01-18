@@ -396,6 +396,7 @@ var playState = {
                     }, this);
                 });
                 let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
+                    game.sound.stopAll();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -420,6 +421,7 @@ var playState = {
                     }, this);
                 });
                 let button2 = game.add.button(game.world.centerX + 300 , game.world.centerY + 300,'menu-button', function(){
+                    game.sound.stopAll();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -444,8 +446,9 @@ var playState = {
                     }, this);
                 });
                 let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
+                    game.sound.stopAll();
                     game.state.start('menu');
-                    }, this);
+                }, this);
                 button1.anchor.set(0.5, 0.5);
                 button2.anchor.set(0.5, 0.5);
             };
