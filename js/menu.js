@@ -12,9 +12,11 @@ var menuState = {
 			startButton.scale.set(0.8, 0.8);
 // options button
 
-		game.add.audio('menutheme', 0.5, true);
+		game.sound.stopAll();
+		game.add.audio('menutheme', 0.5, true).play();
 	},
 	play: function() {
+		game.add.audio('buttonclick').play();
 		game.state.start('play');
 	},
 	update: function() {

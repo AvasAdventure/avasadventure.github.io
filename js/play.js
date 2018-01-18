@@ -14,6 +14,8 @@ var playState = {
             game.add.audio('card2'),
             game.add.audio('card3')
         ];
+        this.soundClick = game.add.audio('buttonclick');
+        this.soundClick.volume = 1;
 
         //for fading
         this.fadeSprite = game.add.sprite(0, 0, 'black');
@@ -32,15 +34,17 @@ var playState = {
         //end turn button
         var endTurnButton = game.add.button(120, 120, 'endturn-button', function(){
             if(playState.blockInput){return;}
+            playState.soundClick.play();
             playState.endTurn();
         });
         endTurnButton.scale.set(1.5,1.5);
         // return to main menu button
         var returnButton = game.add.button(25, 25, 'return-button', function(){
             if(!playState.isInputEnabled()){return;}
-            else {
-                playState.state.start('menu');
-            }   
+            
+            playState.soundClick.play();
+            playState.backgroundTrack.destroy();
+            playState.state.start('menu');
         });
         // quick guide button
         var guideButton = game.add.button(1700, 25, 'guide-button', function() {
@@ -52,7 +56,9 @@ var playState = {
                 actionGuide.destroy();
                 closeButton.destroy();
                 playState.allowInput(true)
+                playState.soundClick.play();
             });
+            playState.soundClick.play();
             closeButton.anchor.set(0.5,0.5);
         });
         //Draw pile
@@ -595,6 +601,8 @@ var playState = {
 
             //NextButton
             let button = game.add.button(game.world.centerX, game.world.centerY,'next-button', function(){
+                
+                playState.soundClick.play();
                 button.destroy();
                 playerText.destroy();
                 alphaTween = playState.fadeScreen(false);

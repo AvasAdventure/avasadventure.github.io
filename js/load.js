@@ -25,6 +25,7 @@ var loadState = {
 		game.load.audio('background1', 'assets/audio/background1.wav');
 		game.load.audio('background2', 'assets/audio/background2.wav');
 		game.load.audio('background3', 'assets/audio/background3.wav');
+		game.load.audio('buttonclick', 'assets/audio/buttonclick.wav');
 		game.load.audio('card1', 'assets/audio/cardMove1.wav');
 		game.load.audio('card2', 'assets/audio/cardMove2.wav');
 		game.load.audio('card3', 'assets/audio/cardMove3.wav');
