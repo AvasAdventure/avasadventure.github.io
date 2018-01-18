@@ -112,8 +112,7 @@ var playState = {
         this.p2handSprites = game.add.group();
         this.animatingSprites = game.add.group();
 
-        this.endGame = false;
-        this.skipNextTurn = false;
+
         this.countDown = 5;
     },
     create: function() {
@@ -126,8 +125,8 @@ var playState = {
         playState.p2handSprites.visible = !playState.playerTurn;
         playState.p2pointSprites.visible = !playState.playerTurn;
 
-        this.drawCard(true, 4, false);
-        this.drawCard(false, 4, false);
+        this.drawCard(true, 4, false, false);
+        this.drawCard(false, 4, false, false);
 
         this.p1handSprites.inputEnableChildren = true;
         this.p1handSprites.onChildInputDown.add(this.cardClick, this);
@@ -145,9 +144,10 @@ var playState = {
         game.debug.text('input enabled: ' + playState.isInputEnabled(), 32, 32);
         //game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
-    drawCard: function(player, amount = 1, saveReplay = true){
+    drawCard: function(player, amount = 1, saveReplay = true, actionCost = true){
             let actions = this.checkActions();
-            if(!actions) {'no more actions left'}
+            if(!actions) {return};
+                console.log(actionCost, maxPlayerActions);
             for (let i = 0; i < amount; i++) {
                 //Allowed?
                 let handSize;
@@ -218,6 +218,8 @@ var playState = {
                     }
                 }
             } 
+        if(actionCost){maxPlayerActions -=1};
+            
     },
 
     cardClick: function(sprite, pointer){
