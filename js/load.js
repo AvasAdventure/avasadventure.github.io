@@ -3,6 +3,7 @@ var loadState = {
 		//Load general assets here.
 		game.load.crossOrigin = 'anonymous';
 		game.load.spritesheet('ava_shrug', 'assets/ava_shrug.png', 320, 413, 3);
+		game.load.spritesheet('mute', 'assets/mute-button.png',133,132);
 		game.load.image('ava_logo', 'assets/ava_logo.png');
 		game.load.image('background', 'assets/background.png');
 		game.load.image('card-back', 'assets/card-back.png');

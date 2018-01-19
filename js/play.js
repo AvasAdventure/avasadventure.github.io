@@ -85,6 +85,16 @@ var playState = {
                 maxPlayerActions -= 1;
             }
         });
+        var muteButton = game.add.button(1650, 250, 'mute', function() {
+            if (game.sound.mute) {
+                game.sound.mute = false;
+                muteButton.setFrames(0);
+            } else {
+                game.sound.mute = true;
+                muteButton.setFrames(1);
+            }
+        }, this, 1, 0, 2);
+        muteButton.anchor.set(0.5,0.5);
 
         drawPileButton.width = cardWidth;
         drawPileButton.height = cardHeight;
