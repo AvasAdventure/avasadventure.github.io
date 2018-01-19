@@ -3,6 +3,7 @@ var playState = {
         var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
 
         //Music
+        this.backgroundMusic = game.add.audio('background1', .3, true);
         this.music = [
             game.add.audio('background1'),
             game.add.audio('background2'),
@@ -44,9 +45,7 @@ var playState = {
             if(!playState.isInputEnabled()){return;}
             
             playState.soundClick.play();
-            playState.backgroundTrack.stop();
             game.sound.stopAll();
-            playState.backgroundTrack.destroy();
             playState.state.start('menu');
         });
         // quick guide button
@@ -126,8 +125,7 @@ var playState = {
     },
     create: function() {
         game.sound.stopAll();
-
-        this.playMusic();
+        this.backgroundMusic.play();
 
         playState.p1handSprites.visible = playState.playerTurn;
         playState.p1pointSprites.visible = playState.playerTurn;
@@ -718,17 +716,6 @@ var playState = {
         let sound = this.cardSounds[Math.floor(Math.random() * this.cardSounds.length)];
         sound.play();
         sound.volume = 0.5;
-    },
-
-    playMusic: function(){
-        try{
-            this.backgroundTrack = this.music[Math.floor(Math.random() * this.music.length)];
-            this.backgroundTrack.play();
-            this.backgroundTrack.volume = 0.3;
-            this.backgroundTrack.onStop.add(this.playMusic, this);
-        }catch(e){
-            console.log(e);
-        }
     },
     replay: function(){
         let otherPointCardCount;
