@@ -4,11 +4,6 @@ var playState = {
 
         //Music
         this.backgroundMusic = game.add.audio('background1', .3, true);
-        this.music = [
-            game.add.audio('background1'),
-            game.add.audio('background2'),
-            game.add.audio('background3')
-        ];
 
         //Sounds
         this.cardSounds = [
@@ -100,8 +95,10 @@ var playState = {
         this.discardPileSpr;
         this.p1pointCards = [];
         this.p1pointSprites = game.add.group();
+        this.p1opponentSprites = game.add.group();
         this.p2pointCards = [];
         this.p2pointSprites = game.add.group();
+        this.p2opponentSprites = game.add.group();
         this.blockInput = false;
         
         //Replay sequence?!
@@ -162,7 +159,7 @@ var playState = {
         
     },
     render: function() {
-        game.debug.text('input enabled: ' + playState.isInputEnabled(), 32, 32);
+        //game.debug.text('input enabled: ' + playState.isInputEnabled(), 32, 32);
         //game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
     drawCard: function(player, amount = 1, saveReplay = true, actionCost = true){
@@ -345,6 +342,7 @@ var playState = {
         }
     },
     cardHoverOver: function(sprite){
+        //playState.playCardSound();
         //bigger size
         game.add.tween(sprite).to({width: cardWidthBig, height: cardHeightBig}, 100, null, true, 0);
         //render on top
@@ -648,21 +646,20 @@ var playState = {
             if(!this.skipNextTurn){maxPlayerActions = 2}else{this.skipNextTurn = false};
             if(!playState.isInputEnabled()){return;}
             if(this.endGame) {this.countDown -= 1;console.log('Turns til homecoming: ' + this.countDown)}
-                playState.allowInput(false);
+            playState.allowInput(false);
             let alphaTween = playState.fadeScreen(true);
             alphaTween.onComplete.add(function(){
             //switch turns
-                playState.playerTurn = !playState.playerTurn;
+            playState.playerTurn = !playState.playerTurn;
             //hide all cards
-                playState.p1handSprites.visible = playState.playerTurn;
-                playState.p1pointSprites.visible = playState.playerTurn;
-                playState.p2handSprites.visible = !playState.playerTurn;
-                playState.p2pointSprites.visible = !playState.playerTurn;
+            playState.p1handSprites.visible = playState.playerTurn;
+            playState.p1pointSprites.visible = playState.playerTurn;
+            playState.p1opponentSprites.visible = playState.playerTurn;
+            playState.p2handSprites.visible = !playState.playerTurn;
+            playState.p2pointSprites.visible = !playState.playerTurn;
+            playState.p2opponentSprites.visible = !playState.playerTurn;
 
-                playState.animatingSprites.removeAll(true);
-                playState.replayCards.forEach(element => {
-                    element.destroy();
-                });
+            playState.animatingSprites.removeAll(true);
 
             //Add text
             let playerText;
@@ -767,8 +764,8 @@ var playState = {
                         }, this);
                         break;
                     case 1: //action
-                    console.log(rsAction[actionAmount]);
-                        var cardSpr = cardFunctions.showCardSprite(rsAction[actionAmount], game.world.centerX, 0 - cardHeight, cardWidthSmall, cardHeightSmall);
+                        let cardNumber = rsAction[actionAmount];
+                        var cardSpr = cardFunctions.showCardSprite(cardNumber, game.world.centerX, 0 - cardHeight, cardWidthSmall, cardHeightSmall);
                         playState.replayCards.push(cardSpr);
                         var actionX = game.world.centerX;
                         var actionY = game.world.centerY;
@@ -777,6 +774,38 @@ var playState = {
                             playState.blockInput = true;
                         }, this)
                         .onComplete.add(function(){
+                            //Show message
+                            console.log(playState.deck[cardNumber].action);
+                            switch (Number(playState.deck[cardNumber].action)) {
+                                case 0:
+                                    //Homecoming
+                                    var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
+                                    showHomeComing.anchor.set(0.5,0.5);
+                                    var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                                        showHomeComing.destroy();
+                                        skipButton.destroy();
+                                        playState.allowInput(true);
+                                    }, this);
+                                    skipButton.anchor.set(0.5,0.5);
+                                    break;
+                                case 1:
+                                    //Destoy point card
+                                    break;
+                                case 2:
+                                    //Protect card
+                                    break;
+                                case 3:
+                                    //skip turn
+                                    break;
+                                case 4:
+                                    //steal card
+                                    break;
+                                case 5:
+                                    //Draw two cards
+                                    
+                                    break;
+                            }
+                            
                             game.time.events.add(500, function() { //dramatic 'play' effect
                                 let backcard = cardFunctions.flipCard(cardSpr);
                                 let backX = 160;
@@ -805,7 +834,11 @@ var playState = {
                         spr.width = cardWidth;
                         spr.height = cardHeight;
                         spr.anchor.set(0.5, 0.5);
-                        playState.replayCards.push(spr);
+                        if(playState.playerTurn){
+                            playState.p1opponentSprites.addChild(spr);
+                        }else{
+                            playState.p2opponentSprites.addChild(spr);
+                        }
                         var newXx = 535 + ((cardWidthSmall/2) * pointAmount);
                         var newYy = 186;
                         var tween = game.add.tween(spr).to({x: newXx, y: newYy, width: cardWidthSmall, height: cardHeightSmall}, 500, null, true, 0)
