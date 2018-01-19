@@ -591,17 +591,6 @@ var playState = {
         }
     },
     showActionEvents: function() {
-        if(this.endGame){
-            playState.allowInput(false);
-            var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
-            showHomeComing.anchor.set(0.5,0.5);
-            var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
-                showHomeComing.destroy();
-                skipButton.destroy();
-                playState.allowInput(true);
-            }, this);
-            skipButton.anchor.set(0.5,0.5);
-        }
         if (cardStolen) {
             playState.allowInput(false);
             stealEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'steal-event');
@@ -610,6 +599,7 @@ var playState = {
                 stealEvent.destroy();
                 skipButton.destroy();
                 playState.allowInput(true);
+                playState.showActionEvents();
             }, this);
             skipButton.anchor.set(0.5,0.5);
             console.log('show cardStolen event');
@@ -623,10 +613,27 @@ var playState = {
                 skipEvent.destroy();
                 skipButton.destroy();
                 playState.allowInput(true);
+                playState.showActionEvents();
             }, this);
             skipButton.anchor.set(0.5,0.5);
             maxPlayerActions = 0;
             console.log('show skipTurn event');
+            skipNextTurn = false;
+        }
+
+        if(this.endGame){
+            playState.allowInput(false);
+            var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
+            showHomeComing.anchor.set(0.5,0.5);
+            var text = game.add.text(game.world.centerX, game.world.centerY + 50, playState.countDown + ' turns left!', {size: 72, color: 0xffffff});
+            text.anchor.set(.5,.5);
+            var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                showHomeComing.destroy();
+                skipButton.destroy();
+                text.destroy();
+                playState.allowInput(true);
+            }, this);
+            skipButton.anchor.set(0.5,0.5);
         }
     },
     allowInput: function(state){
