@@ -69,8 +69,21 @@ var playState = {
                 return;
             }
             if(!playState.isInputEnabled()){return;}
+            let actions = playState.checkActions();
+            if(!actions) {
+                console.log('no actions');
+                var noActions = game.add.sprite(game.world.centerX, game.world.centerY, 'no-actions');
+                noActions.anchor.set(0.5,0.5);
+                var closeButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                    closeButton.destroy();
+                    noActions.destroy();
+                    playState.allowInput(true)
+                }, this);
+                closeButton.anchor.set(0.5,0.5);
+            } else {
                 playState.drawCard(playState.playerTurn);
-            if(actionCost){maxPlayerActions -=1};
+                maxPlayerActions -= 1;
+            }
         });
 
         drawPileButton.width = cardWidth;
@@ -690,7 +703,7 @@ var playState = {
 
     checkActions: function(){
         if (maxPlayerActions != 0) {
-//            let actionAlert = game.add.sprite(game.word.centerX, game.world.centerY, 'No more Actions Left!')
+//            let actionAlert = game.add.sprite(game.world.centerX, game.world.centerY, 'No more Actions Left!')
             return true;
         } else {
             return false;
