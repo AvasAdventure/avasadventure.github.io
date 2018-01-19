@@ -591,6 +591,17 @@ var playState = {
         }
     },
     showActionEvents: function() {
+        if(this.endGame){
+            playState.allowInput(false);
+            var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
+            showHomeComing.anchor.set(0.5,0.5);
+            var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                showHomeComing.destroy();
+                skipButton.destroy();
+                playState.allowInput(true);
+            }, this);
+            skipButton.anchor.set(0.5,0.5);
+        }
         if (cardStolen) {
             playState.allowInput(false);
             stealEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'steal-event');
@@ -602,7 +613,9 @@ var playState = {
             }, this);
             skipButton.anchor.set(0.5,0.5);
             console.log('show cardStolen event');
-        } else if (skipNextTurn) {
+            cardStolen = false;
+        } 
+        if (skipNextTurn) {
             playState.allowInput(false);
             skipEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'strike-event');
             skipEvent.anchor.set(0.5,0.5);
@@ -612,11 +625,8 @@ var playState = {
                 playState.allowInput(true);
             }, this);
             skipButton.anchor.set(0.5,0.5);
+            maxPlayerActions = 0;
             console.log('show skipTurn event');
-        } else {
-            console.log('nuffin');
-            console.log('Card Stolen?: ' + this.cardStolen);
-            console.log('Skip turn?: ' + this.skipNextTurn);
         }
     },
     allowInput: function(state){
@@ -783,39 +793,7 @@ var playState = {
                         .onUpdateCallback(function(){
                             playState.blockInput = true;
                         }, this)
-                        .onComplete.add(function(){
-                            //Show message
-                            console.log(playState.deck[cardNumber].action);
-                            switch (Number(playState.deck[cardNumber].action)) {
-                                case 0:
-                                    //Homecoming
-                                    var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
-                                    showHomeComing.anchor.set(0.5,0.5);
-                                    var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
-                                        showHomeComing.destroy();
-                                        skipButton.destroy();
-                                        playState.allowInput(true);
-                                    }, this);
-                                    skipButton.anchor.set(0.5,0.5);
-                                    break;
-                                case 1:
-                                    //Destoy point card
-                                    break;
-                                case 2:
-                                    //Protect card
-                                    break;
-                                case 3:
-                                    //skip turn
-                                    break;
-                                case 4:
-                                    //steal card
-                                    break;
-                                case 5:
-                                    //Draw two cards
-                                    
-                                    break;
-                            }
-                            
+                        .onComplete.add(function(){                            
                             game.time.events.add(500, function() { //dramatic 'play' effect
                                 let backcard = cardFunctions.flipCard(cardSpr);
                                 let backX = 160;
