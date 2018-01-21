@@ -12,7 +12,8 @@ var loadState = {
 		game.load.image('game-board', 'assets/game-board.png');
 		game.load.image('black', 'assets/black.png');
 		game.load.image('win-screen', 'assets/win-screen.png');
-		game.load.image('board-background', 'assets/board-background.png');
+// background
+		game.load.spritesheet('board-background', 'assets/background-spritesheet.png', 1920, 1080, 5);
 // buttons
 		game.load.image('start-button', 'assets/start-button.png');
 		game.load.image('endturn-button', 'assets/endturn-button.png');
