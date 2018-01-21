@@ -6,7 +6,9 @@ var loadState = {
 		game.load.spritesheet('mute', 'assets/mute-button.png',133,132);
 		game.load.image('ava_logo', 'assets/ava_logo.png');
 		game.load.image('background', 'assets/background.png');
-		game.load.image('card-back', 'assets/card-back.png');
+		game.load.image('card-back', 'assets/card-back.png');		
+		game.load.image('drag-overlay-points', 'assets/drag-overlay-points.png');
+		game.load.image('drag-overlay-action', 'assets/drag-overlay-action.png');
 		game.load.image('game-board', 'assets/game-board.png');
 		game.load.image('black', 'assets/black.png');
 		game.load.image('win-screen', 'assets/win-screen.png');

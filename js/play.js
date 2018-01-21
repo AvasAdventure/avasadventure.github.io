@@ -28,6 +28,16 @@ var playState = {
         }
         this.deck = jsons;
         
+        //drag overlay
+        this.dragOverlay = game.add.group();
+        let overlay1 = game.add.sprite(game.world.centerX, game.world.centerY, 'drag-overlay-points');
+        overlay1.anchor.set(.5,.5);
+        let overlay2 = game.add.sprite(game.world.centerX, game.world.centerY, 'drag-overlay-action');
+        overlay2.anchor.set(.5,.5);
+        this.dragOverlay.addChild(overlay1);
+        this.dragOverlay.addChild(overlay2);
+        this.dragOverlay.visible = false;
+
         //end turn button
         var endTurnButton = game.add.button(120, 120, 'endturn-button', function(){
             if(playState.blockInput){return;}
@@ -157,11 +167,13 @@ var playState = {
 
         this.p1handSprites.inputEnableChildren = true;
         this.p1handSprites.onChildInputDown.add(this.cardClick, this);
+        this.p1handSprites.onChildInputUp.add(this.cardRelease, this);
         this.p1handSprites.onChildInputOver.add(this.cardHoverOver, this);
         this.p1handSprites.onChildInputOut.add(this.cardHoverOut, this);
 
         this.p2handSprites.inputEnableChildren = true;        
         this.p2handSprites.onChildInputDown.add(this.cardClick, this);
+        this.p2handSprites.onChildInputUp.add(this.cardRelease, this);
         this.p2handSprites.onChildInputOver.add(this.cardHoverOver, this);
         this.p2handSprites.onChildInputOut.add(this.cardHoverOut, this);
     },
@@ -237,18 +249,27 @@ var playState = {
                         handSize = playState.p2handSprites.length;
                         cardSpr = playState.p2handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
                     }
-                //Move to the hand
-                    let newX = (385 + (cardWidth/1.5) * handSize);
-                    let newY = 900;
-                    cardSpr.x = newX;
-                    cardSpr.y = newY;
+                        //Move to the hand
+                        let newX = (385 + (cardWidth/1.5) * handSize);
+                        let newY = 900;
+                        cardSpr.x = newX;
+                        cardSpr.y = newY;
                     }
                 }
             }            
     },
+    cardRelease: function(sprite, pointer){
+        playState.dragOverlay.visible = false;
+        game.add.tween(sprite).to({x: playState.orgDragPosX, y: playState.orgDragPosY}, 200, null, true);
+    },
     cardClick: function(sprite, pointer){
         if(!playState.isInputEnabled()){return;}
-        let actions = this.checkActions();
+        
+        playState.dragOverlay.visible = true;
+        playState.orgDragPosX = sprite.x;
+        playState.orgDragPosY = sprite.y;
+        sprite.input.enableDrag();
+        /*let actions = this.checkActions();
         if(!actions) {
             playState.allowInput(false);
             var noActions = game.add.sprite(game.world.centerX, game.world.centerY, 'no-actions');
@@ -349,7 +370,7 @@ var playState = {
                     maxPlayerActions -= 1;
                 });
             }
-        }
+        }*/
     },
     cardHoverOver: function(sprite){
         //playState.playCardSound();
@@ -625,7 +646,7 @@ var playState = {
             playState.allowInput(false);
             var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
             showHomeComing.anchor.set(0.5,0.5);
-            var text = game.add.text(game.world.centerX, game.world.centerY + 50, playState.countDown + ' turns left!', {size: 72, color: 0xffffff});
+            var text = game.add.text(game.world.centerX, game.world.centerY + 50, playState.countDown + ' turns left!', {size: 72, color: '#ffffff'});
             text.anchor.set(.5,.5);
             var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
                 showHomeComing.destroy();
