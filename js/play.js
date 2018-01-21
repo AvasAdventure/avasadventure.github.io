@@ -261,11 +261,14 @@ var playState = {
     },
     cardRelease: function(sprite, pointer){
         playState.dragOverlay.visible = false;
-        game.add.tween(sprite).to({x: playState.orgDragPosX, y: playState.orgDragPosY}, 200, null, true);
+        game.add.tween(sprite).to({x: playState.orgDragPosX, y: playState.orgDragPosY}, 200, null, true)
+        .onComplete.add(function(){
+            playState.isDragging = false;
+        });
     },
     cardClick: function(sprite, pointer){
-        if(!playState.isInputEnabled()){return;}
-        
+        if(!playState.isInputEnabled() || playState.isDragging){return;}
+        playState.isDragging = true;
         playState.dragOverlay.visible = true;
         playState.orgDragPosX = sprite.x;
         playState.orgDragPosY = sprite.y;
