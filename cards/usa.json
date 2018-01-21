@@ -1,0 +1,62 @@
+[
+    {
+        "country": "5",
+        "points": "1",
+        "action": "5",
+        "description": "Draw two cards"
+    },
+    {
+        "country": "5",
+        "points": "1",
+        "action": "4",
+        "description": "Steal a card"
+    },
+    {
+        "country": "5",
+        "points": "1",
+        "action": "3",
+        "description": "Oppenent skips a turn"
+    },
+    {
+        "country": "5",
+        "points": "1",
+        "action": "1",
+        "description": "Destroy one point card"
+    },
+    {
+        "country": "5",
+        "points": "1",
+        "action": "2",
+        "description": "Protect one point card"
+    },
+    {
+        "country": "5",
+        "points": "2",
+        "action": "1",
+        "description": "Destroy one point card"
+    },
+    {
+        "country": "5",
+        "points": "2",
+        "action": "3",
+        "description": "Opponent skips a turn"
+    },
+    {
+        "country": "5",
+        "points": "2",
+        "action": "1",
+        "description": "Destroy one point card"
+    },
+    {
+        "country": "5",
+        "points": "3",
+        "action": "4",
+        "description": "Steal a card"
+    },
+    {
+        "country": "5",
+        "points": "0",
+        "action": "0",
+        "description": "Homecoming"
+    }
+]

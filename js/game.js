@@ -1,5 +1,5 @@
 //Game Configuration
-var deckStorageLink = "https://raw.githubusercontent.com/AvasAdventure/Card-Decks/master/";
+var deckStorageLink = "cards/";//"https://raw.githubusercontent.com/AvasAdventure/Card-Decks/master/";
 var deckLength = 10;
 var maxPlayerActions = 2;
 var maxHandSize = 10;

@@ -1,0 +1,62 @@
+[
+    {
+		"country": "1",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "5",
+		"description": "Draw two cards"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "1",
+		"description": "Destroy one point card"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "2",
+		"description": "Protect one point card"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "3",
+		"description": "Other player skips a turn"
+	},
+	{
+		"country": "1",
+		"points": "1",
+		"action": "4",
+		"description": "Steal a card"
+	}
+]
