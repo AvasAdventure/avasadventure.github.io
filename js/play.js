@@ -195,7 +195,7 @@ var playState = {
         
     },
     render: function() {
-        game.debug.text(playState.draggedTo, 32, 32);
+        //game.debug.text(playState.draggedTo, 32, 32);
         //game.debug.text('input enabled: ' + playState.isInputEnabled(), 32, 32);
         //game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
