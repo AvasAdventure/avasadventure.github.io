@@ -33,11 +33,22 @@ var playState = {
         this.dragOverlay = game.add.group();
         let overlay1 = game.add.sprite(game.world.centerX, game.world.centerY, 'drag-overlay-points');
         overlay1.anchor.set(.5,.5);
-        let overlay2 = game.add.sprite(game.world.centerX, game.world.centerY, 'drag-overlay-action');
+        overlay1.inputEnabled = true;
+        overlay1.areaType = "points";
+        let overlay2 = game.add.sprite(game.world.centerX, 186, 'drag-overlay-action');
         overlay2.anchor.set(.5,.5);
+        overlay2.inputEnabled = true;
+        overlay2.areaType = "action";
         this.dragOverlay.addChild(overlay1);
         this.dragOverlay.addChild(overlay2);
         this.dragOverlay.visible = false;
+        this.dragOverlay.inputEnableChildren = true;
+        this.dragOverlay.onChildInputOver.add(function(sprite, pointer){
+            playState.draggedTo = sprite.areaType;
+        }, this);
+        this.dragOverlay.onChildInputOut.add(function(){
+            playState.draggedTo = "nah";
+        }, this);
 
         //end turn button
         var endTurnButton = game.add.button(120, 120, 'endturn-button', function(){
@@ -176,12 +187,13 @@ var playState = {
         this.p2handSprites.onChildInputDown.add(this.cardClick, this);
         this.p2handSprites.onChildInputUp.add(this.cardRelease, this);
         this.p2handSprites.onChildInputOver.add(this.cardHoverOver, this);
-        this.p2handSprites.onChildInputOut.add(this.cardHoverOut, this);
+        this.p2handSprites.onChildInputOut.add(this.cardHoverOut, this);    
     },
     update: function() {
         
     },
     render: function() {
+        game.debug.text(playState.draggedTo, 32, 32);
         //game.debug.text('input enabled: ' + playState.isInputEnabled(), 32, 32);
         //game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
@@ -261,20 +273,111 @@ var playState = {
     },
     cardRelease: function(sprite, pointer){
         playState.dragOverlay.visible = false;
-        game.add.tween(sprite).to({x: playState.orgDragPosX, y: playState.orgDragPosY}, 200, null, true)
-        .onComplete.add(function(){
-            playState.isDragging = false;
-        });
+        
+        if(Phaser.Rectangle.containsPoint(playState.dragOverlay.getChildAt(0).getBounds(),pointer.position)){
+            playState.playCardSound();
+            playState.updateHand();
+
+            //Play as action card
+            let card = sprite.cardNr;
+            //Remove from hand
+            sprite = playState.animatingSprites.add(sprite);
+            //Move to center
+            game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
+            .onUpdateCallback(function(){
+                playState.allowInput(false);
+            })
+            .onComplete.add(function(){
+                let backcard = cardFunctions.flipCard(sprite);
+                if(playState.playerTurn){
+                    backcard = playState.p1pointSprites.add(backcard);
+                }else{
+                    backcard = playState.p2pointSprites.add(backcard);
+                }
+
+                let backX;
+                if(playState.playerTurn){
+                    backX = 460 + (cardWidth/1.5) * (playState.p1pointSprites.length-1);
+                }else{
+                    backX = 460 + (cardWidth/1.5) * (playState.p2pointSprites.length-1);
+                }
+
+                game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
+                .onUpdateCallback(function(){
+                    playState.allowInput(false);
+                }, this)
+                .onComplete.add(function(){
+                    playState.allowInput(true);
+                    playState.isDragging = false;
+                }, this);
+
+                //Save replay
+                playState.replaySequence.push(2); //0=draw, 1=action, 2=point
+                playState.rsPoints += 1;
+
+                //Play action
+                playState.playPoints(sprite.cardNr);
+                maxPlayerActions -= 1;
+            });
+        }else if(Phaser.Rectangle.containsPoint(playState.dragOverlay.getChildAt(1).getBounds(), pointer.position)){
+            //Play as action card
+            let card = sprite.cardNr;
+            //Remove from hand
+            sprite = playState.animatingSprites.add(sprite);
+            
+            //Move to center
+            game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
+            .onUpdateCallback(function(){
+                playState.allowInput(false);
+            });
+
+            //Save replay
+            playState.replaySequence.push(1);
+            playState.rsAction.push(card);
+
+            //Play action
+            playState.playAction(sprite.cardNr);
+            playState.playCardSound();
+            playState.updateHand();
+
+            game.time.events.add(1000, function() { //wait a sec
+                let backcard = cardFunctions.flipCard(sprite);
+                let backX = 160;
+                game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
+                .onUpdateCallback(function(){
+                    playState.allowInput(false);
+                }, this)
+                .onComplete.add(function(){
+                    if(playState.discardPileSpr == undefined){
+                        playState.discardPileSpr = game.add.sprite(160, game.world.centerY, 'card-back');
+                        playState.discardPileSpr.anchor.set(0.5, 0.5);
+                        playState.discardPileSpr.width = cardWidth;
+                        playState.discardPileSpr.height = cardHeight;
+                    }
+                    backcard.destroy();
+                    playState.allowInput(true);
+                    playState.isDragging = false;
+                }, this);
+                maxPlayerActions -= 1;
+            });
+        }else{
+            game.add.tween(sprite).to({x: playState.orgDragPosX, y: playState.orgDragPosY}, 200, null, true)
+            .onComplete.add(function(){
+                playState.isDragging = false;
+            });
+        }
     },
     cardClick: function(sprite, pointer){
-        /*
         if(!playState.isInputEnabled() || playState.isDragging){return;}
         playState.isDragging = true;
         playState.dragOverlay.visible = true;
+        playState.dragOverlay.z = 100;
+        //game.world.bringToTop(playState.dragOverlay);
         playState.orgDragPosX = sprite.x;
         playState.orgDragPosY = sprite.y;
         sprite.input.enableDrag();
-        */
+        
+        /*
         let actions = this.checkActions();
         if(!actions) {
             playState.allowInput(false);
@@ -374,7 +477,7 @@ var playState = {
                     maxPlayerActions -= 1;
                 });
             }
-        }
+        }*/
     },
     cardHoverOver: function(sprite){
         //playState.playCardSound();
