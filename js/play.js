@@ -185,7 +185,7 @@ var playState = {
         this.p1handSprites.onChildInputOver.add(this.cardHoverOver, this);
         this.p1handSprites.onChildInputOut.add(this.cardHoverOut, this);
 
-        this.p2handSprites.inputEnableChildren = true;        
+        this.p2handSprites.inputEnableChildren = true;
         this.p2handSprites.onChildInputDown.add(this.cardClick, this);
         this.p2handSprites.onChildInputUp.add(this.cardRelease, this);
         this.p2handSprites.onChildInputOver.add(this.cardHoverOver, this);
@@ -200,78 +200,78 @@ var playState = {
         //game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
     drawCard: function(player, amount = 1, saveReplay = true, actionCost = true){
-            let actions = this.checkActions();
-            if(!actions) {return};
-            for (let i = 0; i < amount; i++) {
-                //Allowed?
-                let handSize;
-                if(player){
-                    handSize = playState.p1handSprites.length;
-                }else{
-                    handSize = playState.p2handSprites.length;
-                }
-                if(handSize >= maxHandSize){
-                    console.log('not allowed');
-                    return;
-                } else {
+        let actions = this.checkActions();
+        if(!actions) {return};
+        for (let i = 0; i < amount; i++) {
+            //Allowed?
+            let handSize;
+            if(player){
+                handSize = playState.p1handSprites.length;
+            }else{
+                handSize = playState.p2handSprites.length;
+            }
+            if(handSize >= maxHandSize){
+                console.log('not allowed');
+                return;
+            } else {
 
-                //Get a card
-                let card = playState.drawPile[0];
-                playState.drawPile.splice(0, 1);
-                playState.updateHand();
-                //Animation if it's for the current player
-                if(player == playState.playerTurn){
+            //Get a card
+            let card = playState.drawPile[0];
+            playState.drawPile.splice(0, 1);
+            playState.updateHand();
+            //Animation if it's for the current player
+            if(player == playState.playerTurn){
+                
+                game.time.events.add(500 * i, function() { //wait a bit before dealing next card
                     
-                    game.time.events.add(500 * i, function() { //wait a bit before dealing next card
-                        
-                        playState.playCardSound();
-                        let handSize;
-                        let cardSpr;
-                    //get hand size and add to hand
-                        if(playState.playerTurn){
-                            handSize = playState.p1handSprites.length;
-                            cardSpr = playState.p1handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
-                        }else{
-
-                            handSize = playState.p2handSprites.length;
-                            cardSpr = playState.p2handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
-                        }
-
-
-                    //Move to the hand
-                        let newX = (385 + (cardWidth/1.5) * handSize);
-                        let newY = 900;
-                        game.add.tween(cardSpr).to({x: newX, y: newY}, 500, null, true, 0)
-                        .onUpdateCallback(function(){
-                            playState.allowInput(false);
-                        })
-                        .onComplete.add(function(){
-                            playState.allowInput(true);
-                        });
-                    //Save replay
-                        if(saveReplay){
-                            playState.replaySequence.push(0);
-                        }
-                    });
-                }else{
-                //Add to hand
+                    playState.playCardSound();
                     let handSize;
-                    let cardSprite;
-                    if(player){
+                    let cardSpr;
+                //get hand size and add to hand
+                    if(playState.playerTurn){
                         handSize = playState.p1handSprites.length;
                         cardSpr = playState.p1handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
                     }else{
+
                         handSize = playState.p2handSprites.length;
                         cardSpr = playState.p2handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
                     }
-                        //Move to the hand
-                        let newX = (385 + (cardWidth/1.5) * handSize);
-                        let newY = 900;
-                        cardSpr.x = newX;
-                        cardSpr.y = newY;
+
+
+                //Move to the hand
+                    let newX = (385 + (cardWidth/1.5) * handSize);
+                    let newY = 900;
+                    game.add.tween(cardSpr).to({x: newX, y: newY}, 500, null, true, 0)
+                    .onUpdateCallback(function(){
+                        playState.allowInput(false);
+                    })
+                    .onComplete.add(function(){
+                        playState.allowInput(true);
+                    });
+                //Save replay
+                    if(saveReplay){
+                        playState.replaySequence.push(0);
                     }
+                });
+            }else{
+            //Add to hand
+                let handSize;
+                let cardSprite;
+                if(player){
+                    handSize = playState.p1handSprites.length;
+                    cardSpr = playState.p1handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
+                }else{
+                    handSize = playState.p2handSprites.length;
+                    cardSpr = playState.p2handSprites.add(cardFunctions.showCardSprite(card, 1760, 540, cardWidth, cardHeight));
                 }
-            }            
+                    //Move to the hand
+                    let newX = (385 + (cardWidth/1.5) * handSize);
+                    let newY = 900;
+                    cardSpr.x = newX;
+                    cardSpr.y = newY;
+                }
+            }
+        }            
     },
     cardRelease: function(sprite, pointer){
         playState.dragOverlay.visible = false;
@@ -397,15 +397,6 @@ var playState = {
     },
     cardClick: function(sprite, pointer){
         if(!playState.isInputEnabled() || playState.isDragging){return;}
-        playState.isDragging = true;
-        playState.dragOverlay.visible = true;
-        playState.dragOverlay.z = 100;
-        //game.world.bringToTop(playState.dragOverlay);
-        playState.orgDragPosX = sprite.x;
-        playState.orgDragPosY = sprite.y;
-        sprite.input.enableDrag();
-        
-        /*
         let actions = this.checkActions();
         if(!actions) {
             playState.allowInput(false);
@@ -418,95 +409,12 @@ var playState = {
             }, this);
             closeButton.anchor.set(0.5,0.5);
         } else {
-            if(pointer.leftButton.isDown){
-                //Play as action card
-                let card = sprite.cardNr;
-                console.log(this.deck[card]);
-                //Remove from hand
-                sprite = playState.animatingSprites.add(sprite);
-                
-                //Move to center
-                game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
-                .onUpdateCallback(function(){
-                    playState.allowInput(false);
-                });
-
-                //Save replay
-                playState.replaySequence.push(1);
-                playState.rsAction.push(card);
-
-                //Play action
-                playState.playAction(sprite.cardNr);
-                playState.playCardSound();
-                playState.updateHand();
-
-                game.time.events.add(1000, function() { //wait a sec
-                    let backcard = cardFunctions.flipCard(sprite);
-                    let backX = 160;
-                    game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
-                    .onUpdateCallback(function(){
-                        playState.allowInput(false);
-                    }, this)
-                    .onComplete.add(function(){
-                        if(playState.discardPileSpr == undefined){
-                            playState.discardPileSpr = game.add.sprite(160, game.world.centerY, 'card-back');
-                            playState.discardPileSpr.anchor.set(0.5, 0.5);
-                            playState.discardPileSpr.width = cardWidth;
-                            playState.discardPileSpr.height = cardHeight;
-                        }
-                        backcard.destroy();
-                        playState.allowInput(true);
-                    }, this);
-                    maxPlayerActions -= 1;
-                });
-                
-            }else if(pointer.rightButton.isDown){
-                
-                playState.playCardSound();
-                playState.updateHand();
-
-                //Play as action card
-                let card = sprite.cardNr;
-                //Remove from hand
-                sprite = playState.animatingSprites.add(sprite);
-                //Move to center
-                game.add.tween(sprite).to({x: game.world.centerX, y: game.world.centerY, width: cardWidthBig, height: cardHeightBig}, 500, null, true, 0)
-                .onUpdateCallback(function(){
-                    playState.allowInput(false);
-                })
-                .onComplete.add(function(){
-                    let backcard = cardFunctions.flipCard(sprite);
-                    if(playState.playerTurn){
-                        backcard = playState.p1pointSprites.add(backcard);
-                    }else{
-                        backcard = playState.p2pointSprites.add(backcard);
-                    }
-
-                    let backX;
-                    if(playState.playerTurn){
-                        backX = 460 + (cardWidth/1.5) * (playState.p1pointSprites.length-1);
-                    }else{
-                        backX = 460 + (cardWidth/1.5) * (playState.p2pointSprites.length-1);
-                    }
-
-                    game.add.tween(backcard).to({x: backX, width: cardWidth, height: cardHeight}, 500, null, true, 0)
-                    .onUpdateCallback(function(){
-                        playState.allowInput(false);
-                    }, this)
-                    .onComplete.add(function(){
-                        playState.allowInput(true);
-                    }, this);
-
-                    //Save replay
-                    playState.replaySequence.push(2); //0=draw, 1=action, 2=point
-                    playState.rsPoints += 1;
-
-                    //Play action
-                    playState.playPoints(sprite.cardNr);
-                    maxPlayerActions -= 1;
-                });
-            }
-        }*/
+            playState.isDragging = true;
+            playState.dragOverlay.visible = true;
+            playState.orgDragPosX = sprite.x;
+            playState.orgDragPosY = sprite.y;
+            sprite.input.enableDrag();
+        }
     },
     cardHoverOver: function(sprite){
         //playState.playCardSound();
