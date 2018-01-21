@@ -1,6 +1,7 @@
 var playState = {
 	preload: function() {
-        var boardBackground = game.add.tileSprite(0, 0, 1920, 1079, 'board-background');
+        this.boardBackground = game.add.sprite(game.world.centerX, game.world.centerY, 'board-background', 0);
+        this.boardBackground.anchor.set(0.5,0.5);
         var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
 
         //Music
@@ -150,7 +151,7 @@ var playState = {
         this.p1Score = [];
         this.p1ScoreSum = [];
         this.p1Protect = 0;
-        this.setHomeComing = "2";
+
         this.p1Homecomingcards = [];
         this.p2Score = [];
         this.p2ScoreSum = [];
@@ -162,6 +163,7 @@ var playState = {
 
         cardStolen = false;
         skipNextTurn = false;
+        this.setHomeComing;
 
         this.countDown = 5;
     },
@@ -367,6 +369,32 @@ var playState = {
             });
         }
     },
+    getBackGround: function() {
+/*
+        game.load.image('usa-back', 'assets/usa-background.png');
+        game.load.image('netherlands-back', 'assets/netherlands-background.png');
+        game.load.image('germany-back', 'assets/germany-background.png');
+        game.load.image('england-back', 'assets/england-background.png');
+*/
+
+        console.log('current homecoming: ' + setHomeComing);
+        switch (Number(setHomeComing)) {
+            case 0:
+                this.boardBackground.loadTexture('board-background', 1);
+            break;
+            case 1: 
+                this.boardBackground.loadTexture('board-background', 2);
+            break;
+            case 2:
+                this.boardBackground.loadTexture('board-background', 3);
+            break;
+            case 5:
+                this.boardBackground.loadTexture('board-background', 4);
+            break;
+            default:
+                this.boardBackground.loadTexture('board-background', 0);
+        } 
+    },
     cardClick: function(sprite, pointer){
         if(!playState.isInputEnabled() || playState.isDragging){return;}
         playState.isDragging = true;
@@ -393,6 +421,7 @@ var playState = {
             if(pointer.leftButton.isDown){
                 //Play as action card
                 let card = sprite.cardNr;
+                console.log(this.deck[card]);
                 //Remove from hand
                 sprite = playState.animatingSprites.add(sprite);
                 
@@ -554,7 +583,7 @@ var playState = {
                 });
                 let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
                     game.sound.stopAll();
-//                    playState.backgroundTrack.destroy();
+                    playState.backgroundTrack.destroy();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -652,9 +681,11 @@ var playState = {
             }, this);
             skipButton.anchor.set(0.5,0.5);
             setHomeComing = cardNr.country;
+            this.getBackGround(setHomeComing);
 
         } else {
             setHomeComing = cardNr.country;
+            this.getBackGround(setHomeComing);
         }
     },
     protectCard: function() {
