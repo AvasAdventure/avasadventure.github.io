@@ -77,7 +77,6 @@ var playState = {
             if(!playState.isInputEnabled()){return;}
             let actions = playState.checkActions();
             if(!actions) {
-                console.log('no actions');
                 var noActions = game.add.sprite(game.world.centerX, game.world.centerY, 'no-actions');
                 noActions.anchor.set(0.5,0.5);
                 var closeButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
@@ -140,6 +139,7 @@ var playState = {
         this.p1Score = [];
         this.p1ScoreSum = [];
         this.p1Protect = 0;
+        this.setHomeComing = "2";
         this.p1Homecomingcards = [];
         this.p2Score = [];
         this.p2ScoreSum = [];
@@ -267,13 +267,15 @@ var playState = {
         });
     },
     cardClick: function(sprite, pointer){
+        /*
         if(!playState.isInputEnabled() || playState.isDragging){return;}
         playState.isDragging = true;
         playState.dragOverlay.visible = true;
         playState.orgDragPosX = sprite.x;
         playState.orgDragPosY = sprite.y;
         sprite.input.enableDrag();
-        /*let actions = this.checkActions();
+        */
+        let actions = this.checkActions();
         if(!actions) {
             playState.allowInput(false);
             var noActions = game.add.sprite(game.world.centerX, game.world.centerY, 'no-actions');
@@ -286,10 +288,8 @@ var playState = {
             closeButton.anchor.set(0.5,0.5);
         } else {
             if(pointer.leftButton.isDown){
-
                 //Play as action card
                 let card = sprite.cardNr;
-
                 //Remove from hand
                 sprite = playState.animatingSprites.add(sprite);
                 
@@ -374,7 +374,7 @@ var playState = {
                     maxPlayerActions -= 1;
                 });
             }
-        }*/
+        }
     },
     cardHoverOver: function(sprite){
         //playState.playCardSound();
@@ -400,43 +400,39 @@ var playState = {
         let cardCountryPoints = [cardCountry, cardPoints];
         if(playState.playerTurn) {  
             this.p1pointCards.push(cardCountryPoints);
-            console.log('player 1 points length: ' + this.p1pointCards.length);
             console.log('player 1 protection: ' + this.p1Protect);
         } else {
             this.p2pointCards.push(cardCountryPoints);
-            console.log('player 2 points length: ' + this.p2pointCards.length);
             console.log('player 2 protection: ' + this.p2Protect);
 //      this.p2Score.reduce((a,b)=>a+b, 0);
         }
     },
     getScore: function() { 
+        console.log('Final homecoming country: ' + setHomeComing);
         for (var i = 0; i < this.p1pointCards.length;i++) {
         // counts all the english cards, country '2'
-            if (this.p1pointCards[i][0] == "2") {
+            if (this.p1pointCards[i][0] == setHomeComing) {
                 this.p1Score.push(this.p1pointCards[i][1]);
+                console.log(this.p1pointCards[i]);
                 console.log(this.p1pointCards[i][1]);
             } else {
-                console.log('not english')
-                return; 
             }
         }
         for (var j = 0; j < this.p2pointCards.length;j++) {
         // counts all the english cards, country '2'
-            if (this.p2pointCards[j][0] == "2") {
+            if (this.p2pointCards[j][0] == setHomeComing) {
                 this.p2Score.push(this.p2pointCards[j][1]);
+                console.log(this.p2pointCards[j]);
                 console.log(this.p2pointCards[j][1]);
             } else {
-                console.log('not english')
-                return; 
             }
         }
     },
+
     calcWinner: function(p1Score, p2Score) {
         // sum of scores
         this.p1ScoreSum = this.p1Score.reduce((a,b)=>a+b, 0);
-        console.log('player 1 score: ' + this.p1ScoreSum);
         this.p2ScoreSum = this.p2Score.reduce((a,b)=>a+b, 0);
-        console.log('player 2 score: ' + this.p2ScoreSum);
         let winText;
             if (this.p1ScoreSum > this.p2ScoreSum ) {
                 let alphaTween = playState.fadeScreen(true);
@@ -455,7 +451,7 @@ var playState = {
                 });
                 let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
                     game.sound.stopAll();
-                    playState.backgroundTrack.destroy();
+//                    playState.backgroundTrack.destroy();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -516,10 +512,9 @@ var playState = {
     },
     playAction: function(cardNr){
         let cardData = playState.deck[cardNr];
-        console.log(cardData);
         switch (Number(cardData.action)) {
             case 0:
-                this.homeComing();
+                this.homeComing(cardData);
                 break;
             case 1:
                 //Destoy point card
@@ -541,10 +536,9 @@ var playState = {
                 break;
         }
     },
-    homeComing: function() {
+    homeComing: function(cardNr) {
         if (!this.endGame) {
             this.endGame = true;
-            console.log('set coundDown to ' + this.endGame); 
             playState.allowInput(false);
             var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
             showHomeComing.anchor.set(0.5,0.5);
@@ -554,8 +548,10 @@ var playState = {
                 playState.allowInput(true);
             }, this);
             skipButton.anchor.set(0.5,0.5);
+            setHomeComing = cardNr.country;
+
         } else {
-        
+            setHomeComing = cardNr.country;
         }
     },
     protectCard: function() {
@@ -588,7 +584,7 @@ var playState = {
             console.log('player 1 protected one card!')
             this.p1Protect -= 1;
         } else {
-            console.log('dun goofed')
+            console.log('no point cards to destroy')
         }
     },
     skipTurn: function() {
@@ -627,7 +623,6 @@ var playState = {
                 playState.showActionEvents();
             }, this);
             skipButton.anchor.set(0.5,0.5);
-            console.log('show cardStolen event');
             cardStolen = false;
         } 
         if (skipNextTurn) {
@@ -642,7 +637,6 @@ var playState = {
             }, this);
             skipButton.anchor.set(0.5,0.5);
             maxPlayerActions = 0;
-            console.log('show skipTurn event');
             skipNextTurn = false;
         }
 
@@ -689,8 +683,6 @@ var playState = {
     },
 
     endTurn: function(){
-        console.log('card stolen: ' + cardStolen);
-        console.log('has to skip this turn ' + skipNextTurn);
         if(this.countDown <= 0) {
            var scores = this.getScore();
            this.calcWinner();
