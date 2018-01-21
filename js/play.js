@@ -1,5 +1,6 @@
 var playState = {
 	preload: function() {
+        var boardBackground = game.add.tileSprite(0, 0, 1920, 1079, 'board-background');
         var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
 
         //Music
