@@ -40,6 +40,10 @@ var loadState = {
 		game.load.audio('card1', 'assets/audio/cardMove1.wav');
 		game.load.audio('card2', 'assets/audio/cardMove2.wav');
 		game.load.audio('card3', 'assets/audio/cardMove3.wav');
+		game.load.audio('homecoming0', 'assets/audio/homecoming0.wav');
+		game.load.audio('homecoming1', 'assets/audio/homecoming1.wav');
+		game.load.audio('homecoming2', 'assets/audio/homecoming2.wav');
+		game.load.audio('homecoming5', 'assets/audio/homecoming5.wav');
 
 		//Load the card deck list
 		game.load.json('card-decks', deckStorageLink + "countries.json");	

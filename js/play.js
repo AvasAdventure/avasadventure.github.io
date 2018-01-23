@@ -64,7 +64,7 @@ var playState = {
             
             playState.soundClick.play();
             game.sound.stopAll();
-            playState.state.start('menu');
+            location.reload();
         });
         // quick guide button
         var guideButton = game.add.button(1700, 25, 'guide-button', function() {
@@ -449,6 +449,7 @@ var playState = {
     },
     getScore: function() { 
         console.log('Final homecoming country: ' + setHomeComing);
+        game.add.audio('homecoming' + setHomeComing.toString(), .3).play();
         for (var i = 0; i < this.p1pointCards.length;i++) {
         // counts all the english cards, country '2'
             if (this.p1pointCards[i][0] == setHomeComing) {
@@ -589,10 +590,12 @@ var playState = {
             }, this);
             skipButton.anchor.set(0.5,0.5);
             setHomeComing = cardNr.country;
+            game.add.audio('homecoming' + setHomeComing.toString(), .3).play();
             this.getBackGround(setHomeComing);
 
         } else {
             setHomeComing = cardNr.country;
+            game.add.audio('homecoming' + setHomeComing.toString(), .3).play();
             this.getBackGround(setHomeComing);
         }
     },
