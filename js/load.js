@@ -1,8 +1,8 @@
 var loadState = {
 	preload: function() {
-		//Load general assets here.
+
+//Load general assets here.
 		game.load.crossOrigin = 'anonymous';
-		game.load.spritesheet('ava_shrug', 'assets/ava_shrug.png', 320, 413, 3);
 		game.load.spritesheet('mute', 'assets/mute-button.png',133,132);
 		game.load.image('ava_logo', 'assets/ava_logo.png');
 		game.load.image('background', 'assets/background.png');
@@ -12,8 +12,10 @@ var loadState = {
 		game.load.image('game-board', 'assets/game-board.png');
 		game.load.image('black', 'assets/black.png');
 		game.load.image('win-screen', 'assets/win-screen.png');
+
 // background
 		game.load.spritesheet('board-background', 'assets/background-spritesheet.png', 1920, 1080, 5);
+
 // buttons
 		game.load.image('start-button', 'assets/start-button.png');
 		game.load.image('endturn-button', 'assets/endturn-button.png');
@@ -24,14 +26,15 @@ var loadState = {
 		game.load.image('close-button', 'assets/close-button.png');
 		game.load.image('menu-button', 'assets/menu-button.png');
 		game.load.image('new-game', 'assets/new-game.png');
-// event placeholders
 
+// event placeholders
 		game.load.image('steal-event', 'assets/steal-event.png');
-		game.load.image('strike-event', 'assets/strike-event.png');
+		game.load.image('skipturn-event', 'assets/skip-turn-event.png');
 		game.load.image('no-actions', 'assets/noactions-event.png');
+		game.load.image('skip-steal-event', 'assets/skip-steal-event.png');
 		game.load.image('home-coming', 'assets/home-coming.png');
 
-		//Sounds
+//Sounds
 		game.load.audio('menutheme', 'assets/audio/menutheme.wav');
 		game.load.audio('background1', 'assets/audio/background1.wav');
 		game.load.audio('background2', 'assets/audio/background2.wav');
@@ -45,7 +48,7 @@ var loadState = {
 		game.load.audio('homecoming2', 'assets/audio/homecoming2.wav');
 		game.load.audio('homecoming5', 'assets/audio/homecoming5.wav');
 
-		//Load the card deck list
+//Load the card deck list
 		game.load.json('card-decks', deckStorageLink + "countries.json");	
 	},
 	create: function() {

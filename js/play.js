@@ -1,5 +1,5 @@
 var playState = {
-	preload: function() {
+    preload: function() {
         this.boardBackground = game.add.sprite(game.world.centerX, game.world.centerY, 'board-background', 0);
         this.boardBackground.anchor.set(0.5,0.5);
         var background = game.add.tileSprite(0, 0, 1920, 1079, 'game-board');
@@ -24,9 +24,9 @@ var playState = {
 
         //Load cards
         var jsons = [];
-		for(let i = 0; i < deckAmount; i++){
+        for(let i = 0; i < deckAmount; i++){
             let deck = game.cache.getJSON('cards' + i);
-			jsons = jsons.concat(deck);
+            jsons = jsons.concat(deck);
         }
         this.deck = jsons;
         
@@ -118,9 +118,9 @@ var playState = {
         drawPileButton.anchor.set(0.5, 0.5);
 
         var dpile = [];
-		for(let i = 0; i < this.deck.length; i++){
-			dpile[i] = i;
-		}
+        for(let i = 0; i < this.deck.length; i++){
+            dpile[i] = i;
+        }
 
         this.drawPile = cardFunctions.shuffle(dpile);
         this.discardPile = [];
@@ -583,12 +583,11 @@ var playState = {
             playState.allowInput(false);
             var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
             showHomeComing.anchor.set(0.5,0.5);
-            var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
-                showHomeComing.destroy();
-                skipButton.destroy();
+            game.time.events.add(Phaser.Timer.SECOND * 2, function() {
+                game.add.tween(showHomeComing).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
                 playState.allowInput(true);
+                
             }, this);
-            skipButton.anchor.set(0.5,0.5);
             setHomeComing = cardNr.country;
             game.add.audio('homecoming' + setHomeComing.toString(), .3).play();
             this.getBackGround(setHomeComing);
@@ -657,7 +656,7 @@ var playState = {
         }
     },
     showActionEvents: function() {
-        if (cardStolen) {
+        if (cardStolen && !skipNextTurn) {
             playState.allowInput(false);
             stealEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'steal-event');
             stealEvent.anchor.set(0.5,0.5)
@@ -665,24 +664,36 @@ var playState = {
                 stealEvent.destroy();
                 skipButton.destroy();
                 playState.allowInput(true);
-                playState.showActionEvents();
             }, this);
             skipButton.anchor.set(0.5,0.5);
             cardStolen = false;
         } 
-        if (skipNextTurn) {
+        if (skipNextTurn && !cardStolen) {
             playState.allowInput(false);
-            skipEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'strike-event');
+            skipEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'skipturn-event');
             skipEvent.anchor.set(0.5,0.5);
             skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
                 skipEvent.destroy();
                 skipButton.destroy();
                 playState.allowInput(true);
-                playState.showActionEvents();
             }, this);
             skipButton.anchor.set(0.5,0.5);
             maxPlayerActions = 0;
             skipNextTurn = false;
+        }
+        if (skipNextTurn && cardStolen) {
+            playState.allowInput(false);
+            skipStealEvent = game.add.sprite(game.world.centerX, game.world.centerY, 'skip-steal-event');
+            skipStealEvent.anchor.set(0.5, 0.5);
+            skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
+                skipStealEvent.destroy();
+                skipButton.destroy();
+                playState.allowInput(true);
+            }, this);
+            skipButton.anchor.set(0.5,0.5);
+            maxPlayerActions = 0;
+            skipNextTurn = false;
+            cardStolen = false;
         }
 
         if(this.endGame){
@@ -915,14 +926,14 @@ var playState = {
 var cardFunctions = {
     shuffle: function(cards) {
         var currentIndex = cards.length, temporaryValue, randomIndex;
-		while (0 !== currentIndex) {
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex -= 1;
-			temporaryValue = cards[currentIndex];
-			cards[currentIndex] = cards[randomIndex];
-			cards[randomIndex] = temporaryValue;
-		}
-		return cards;
+        while (0 !== currentIndex) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+            temporaryValue = cards[currentIndex];
+            cards[currentIndex] = cards[randomIndex];
+            cards[randomIndex] = temporaryValue;
+        }
+        return cards;
     },
 
     showCardSprite: function(card, x, y, width, height){
@@ -951,21 +962,21 @@ var cardFunctions = {
     },
 
     //Helper functions
-	getCountryIndex: function(number) {
-		var x = number;
-		var count = -1;
-		while(x >= 0){
-			count += 1;
-			x -= deckLength;
-		}
-		return Number(count);
-	},
+    getCountryIndex: function(number) {
+        var x = number;
+        var count = -1;
+        while(x >= 0){
+            count += 1;
+            x -= deckLength;
+        }
+        return Number(count);
+    },
 
-	getSpriteIndex: function(number){
-		var x = number;
-		while(x >= deckLength){
-			x -= deckLength;
-		}
-		return Number(x);
-	}
+    getSpriteIndex: function(number){
+        var x = number;
+        while(x >= deckLength){
+            x -= deckLength;
+        }
+        return Number(x);
+    }
 }
