@@ -492,7 +492,7 @@ var playState = {
                 });
                 let button2 = game.add.button(game.world.centerX + 300, game.world.centerY + 300,'menu-button', function(){
                     game.sound.stopAll();
-                    playState.backgroundTrack.destroy();
+//                    playState.backgroundTrack.destroy();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -518,7 +518,7 @@ var playState = {
                 });
                 let button2 = game.add.button(game.world.centerX + 300 , game.world.centerY + 300,'menu-button', function(){
                     game.sound.stopAll();
-                    playState.backgroundTrack.destroy();
+//                    playState.backgroundTrack.destroy();
                     game.state.start('menu');
                     alphaTween = playState.fadeScreen(false);
                     alphaTween.onComplete.add(function() {
@@ -582,7 +582,7 @@ var playState = {
             this.endGame = true;
             playState.allowInput(false);
             var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
-            showHomeComing.anchor.set(0.5,0.5);
+                showHomeComing.anchor.set(0.5,0.5);
             game.time.events.add(Phaser.Timer.SECOND * 2, function() {
                 game.add.tween(showHomeComing).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
                 playState.allowInput(true);
@@ -697,18 +697,16 @@ var playState = {
         }
 
         if(this.endGame){
-            playState.allowInput(false);
             var showHomeComing = game.add.sprite(game.world.centerX, game.world.centerY, 'home-coming');
-            showHomeComing.anchor.set(0.5,0.5);
+                showHomeComing.anchor.set(0.5,0.5);
             var text = game.add.text(game.world.centerX, game.world.centerY + 50, playState.countDown + ' turns left!', {size: 72, color: '#ffffff'});
-            text.anchor.set(.5,.5);
-            var skipButton = game.add.button(game.world.centerX, game.world.centerY + 150, 'close-button', function() {
-                showHomeComing.destroy();
-                skipButton.destroy();
-                text.destroy();
-                playState.allowInput(true);
-            }, this);
-            skipButton.anchor.set(0.5,0.5);
+                text.anchor.set(.5,.5);
+                game.time.events.add(Phaser.Timer.SECOND * 2, function() {
+                game.add.tween(showHomeComing).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+                }, this);
+                game.time.events.add(Phaser.Timer.SECOND * 2, function() {
+                game.add.tween(text).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+                }, this);
         }
     },
     allowInput: function(state){
