@@ -370,13 +370,6 @@ var playState = {
         }
     },
     getBackGround: function() {
-/*
-        game.load.image('usa-back', 'assets/usa-background.png');
-        game.load.image('netherlands-back', 'assets/netherlands-background.png');
-        game.load.image('germany-back', 'assets/germany-background.png');
-        game.load.image('england-back', 'assets/england-background.png');
-*/
-
         console.log('current homecoming: ' + setHomeComing);
         switch (Number(setHomeComing)) {
             case 0:
